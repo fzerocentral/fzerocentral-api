@@ -12,6 +12,10 @@ Django>=4.0,<4.1
 # Changelog: https://www.django-rest-framework.org/community/release-notes/
 djangorestframework>=3.12.4,<3.13
 
+# JSON:API support for the Django REST framework.
+# Changelog: https://github.com/django-json-api/django-rest-framework-json-api/blob/main/CHANGELOG.md
+djangorestframework-jsonapi>=4.3.0,<4.4
+
 # Configure Django using either environment variables or a .env file.
 # Changelog: https://github.com/joke2k/django-environ/blob/main/CHANGELOG.rst
 django-environ>=0.8.1,<0.9

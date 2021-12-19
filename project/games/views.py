@@ -1,25 +1,19 @@
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 
 from .models import Game
 from .serializers import GameSerializer
 
 
-class GameIndex(APIView):
+class GameIndex(ListAPIView):
 
-    def get(self, request):
-        games = Game.objects.all()
-        serializer = GameSerializer(games, many=True)
-        return Response(dict(data=serializer.data), status=status.HTTP_200_OK)
+    def get_queryset(self):
+        return Game.objects.all().order_by('name')
+    serializer_class = GameSerializer
 
 
-class GameDetail(APIView):
+class GameDetail(RetrieveAPIView):
 
-    def get(self, request, game_pk):
-        try:
-            game = Game.objects.get(pk=game_pk)
-        except Game.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = GameSerializer(game)
-        return Response(dict(data=serializer.data), status=status.HTTP_200_OK)
+    def get_queryset(self):
+        return Game.objects.all()
+    serializer_class = GameSerializer
+    lookup_url_kwarg = 'game_pk'

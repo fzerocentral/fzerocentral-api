@@ -37,6 +37,8 @@ SECRET_KEY = env('SECRET_KEY')
 INSTALLED_APPS = [
     # Django REST framework
     'rest_framework',
+    # JSON:API support for Django REST framework
+    'rest_framework_json_api',
 
     'games',
 ]
@@ -91,16 +93,49 @@ USE_TZ = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# Django REST Framework
+# Django REST Framework and DRF JSON API
 # https://www.django-rest-framework.org/api-guide/settings/
+# https://django-rest-framework-json-api.readthedocs.io/en/stable/usage.html#configuration
+
 REST_FRAMEWORK = {
     # Set this to None so that we don't have to install the contenttypes and
     # auth apps yet.
     'UNAUTHENTICATED_USER': None,
 
-    # Some APIs have multiple rendering methods available, but for simplicity
-    # we'll just have JSON API rendering.
-    'DEFAULT_RENDERER_CLASSES': [
-        'core.renderers.JSONAPIRenderer',
-    ],
+    'PAGE_SIZE': 10,
+    'EXCEPTION_HANDLER': 'rest_framework_json_api.exceptions.exception_handler',
+    'DEFAULT_PAGINATION_CLASS':
+        'rest_framework_json_api.pagination.JsonApiPageNumberPagination',
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework_json_api.parsers.JSONParser',
+        # The below two parsers handle HTML form data; uncomment if useful.
+        # Can also be enabled on a per-view basis.
+        # 'rest_framework.parsers.FormParser',
+        # 'rest_framework.parsers.MultiPartParser',
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework_json_api.renderers.JSONRenderer',
+    ),
+    'DEFAULT_METADATA_CLASS': 'rest_framework_json_api.metadata.JSONAPIMetadata',
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework_json_api.schemas.openapi.AutoSchema',
+    'DEFAULT_FILTER_BACKENDS': (
+        'rest_framework_json_api.filters.QueryParameterValidationFilter',
+        'rest_framework_json_api.filters.OrderingFilter',
+        # Advanced ORM-style filtering; uncomment if useful.
+        # Can also be enabled on a per-view basis.
+        # 'rest_framework_json_api.django_filters.DjangoFilterBackend',
+        'rest_framework.filters.SearchFilter',
+    ),
+    'SEARCH_PARAM': 'filter[search]',
+    'TEST_REQUEST_RENDERER_CLASSES': (
+        'rest_framework_json_api.renderers.JSONRenderer',
+    ),
+    'TEST_REQUEST_DEFAULT_FORMAT': 'vnd.api+json',
 }
+
+# How to format the field names returned in responses.
+JSON_API_FORMAT_FIELD_NAMES = 'dasherize'
+# How to format the resource 'type' returned in responses.
+JSON_API_FORMAT_TYPES = 'dasherize'
+# Pluralize the resource 'type' returned in responses.
+JSON_API_PLURALIZE_TYPES = True
