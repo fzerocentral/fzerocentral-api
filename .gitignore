@@ -1,0 +1,8 @@
+# Specific files which are unique per environment
+.env
+
+# Compiled Python
+__pycache__
+
+# IDE stuff
+.idea

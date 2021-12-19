@@ -1,0 +1,24 @@
+# These are the base Python package requirements that all environments need
+# to run this project.
+#
+# To see requirements for an installed package, use: pip show <package-name>
+
+
+# Web framework.
+# Changelogs: https://docs.djangoproject.com/en/dev/releases/
+Django>=4.0,<4.1
+
+# REST API framework.
+# Changelog: https://www.django-rest-framework.org/community/release-notes/
+djangorestframework>=3.12.4,<3.13
+
+# Configure Django using either environment variables or a .env file.
+# Changelog: https://github.com/joke2k/django-environ/blob/main/CHANGELOG.rst
+django-environ>=0.8.1,<0.9
+
+# PostgreSQL database adapter for Python.
+# Changelog: https://github.com/psycopg/psycopg2/blob/master/NEWS
+#
+# psycopg 3.x is newer and stable, but isn't supported by Django yet:
+# https://code.djangoproject.com/ticket/33308
+psycopg2>=2.9.2,<2.10
