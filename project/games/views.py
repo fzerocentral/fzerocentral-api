@@ -16,4 +16,4 @@ class GameDetail(RetrieveAPIView):
     def get_queryset(self):
         return Game.objects.all()
     serializer_class = GameSerializer
-    lookup_url_kwarg = 'game_pk'
+    lookup_url_kwarg = 'game_id'
