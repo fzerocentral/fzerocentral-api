@@ -7,5 +7,8 @@ from django.urls import include, path
 
 
 urlpatterns = [
+    path('charts/', include('charts.urls', namespace='charts')),
+    path('chart_groups/',
+         include('chart_groups.urls', namespace='chart_groups')),
     path('games/', include('games.urls', namespace='games')),
 ]

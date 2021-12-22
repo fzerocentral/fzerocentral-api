@@ -34,4 +34,5 @@ Data API for the (upcoming) F-Zero Central website. Uses the Django web framewor
 
 ## Miscellaneous developer tips
 
+- When using the PyCharm IDE, if many import statements such as `from games.models import Game` are getting red-underlined, try right-clicking the `project` directory, and choose Mark Directory as -> Sources Root. 
 - Firefox may not know how to display responses of the content type `application/vnd.api+json`. One add-on that can help with this is [JSON Lite](https://github.com/lauriro/json-lite).

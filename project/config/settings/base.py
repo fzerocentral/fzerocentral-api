@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     # JSON:API support for Django REST framework
     'rest_framework_json_api',
 
+    'charts',
+    'chart_groups',
     'games',
 ]
 
@@ -119,7 +121,6 @@ REST_FRAMEWORK = {
     'DEFAULT_METADATA_CLASS': 'rest_framework_json_api.metadata.JSONAPIMetadata',
     'DEFAULT_SCHEMA_CLASS': 'rest_framework_json_api.schemas.openapi.AutoSchema',
     'DEFAULT_FILTER_BACKENDS': (
-        'rest_framework_json_api.filters.QueryParameterValidationFilter',
         'rest_framework_json_api.filters.OrderingFilter',
         # Advanced ORM-style filtering; uncomment if useful.
         # Can also be enabled on a per-view basis.
