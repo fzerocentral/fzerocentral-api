@@ -1,0 +1,887 @@
+body_parts:
+
+  - name: Speedy Dragon
+    first_word_a: Speedy
+    first_word_b: Quick
+    second_word_a: Dragon
+    second_word_b: Wyvern
+    rating: E
+
+  - name: Galaxy Falcon
+    first_word_a: Galaxy
+    first_word_b: Cosmo
+    second_word_a: Falcon
+    second_word_b: Tercel
+    rating: E
+
+  - name: Splash Whale
+    first_word_a: Splash
+    first_word_b: Flash
+    second_word_a: Whale
+    second_word_b: Grampus
+    rating: E
+
+  - name: Liberty Manta
+    first_word_a: Liberty
+    first_word_b: Flying
+    second_word_a: Manta
+    second_word_b: Squid
+    rating: D
+
+  - name: Optical Wing
+    first_word_a: Optical
+    first_word_b: Photon
+    second_word_a: Wing
+    second_word_b: Blade
+    rating: D
+
+  - name: Rage Knight
+    first_word_a: Rage
+    first_word_b: Stormy
+    second_word_a: Knight
+    second_word_b: Bouncer
+    rating: D
+
+  - name: Brave Eagle
+    first_word_a: Brave
+    first_word_b: Strike
+    second_word_a: Eagle
+    second_word_b: Condor
+    rating: D
+
+  - name: Funny Swallow
+    first_word_a: Funny
+    first_word_b: Pretty
+    second_word_a: Swallow
+    second_word_b: Pigeon
+    rating: D
+
+  - name: Holy Spider
+    first_word_a: Holy
+    first_word_b: Sacred
+    second_word_a: Spider
+    second_word_b: Glider
+    rating: C
+
+  - name: Rapid Barrel
+    first_word_a: Rapid
+    first_word_b: Shock
+    second_word_a: Barrel
+    second_word_b: Magnum
+    rating: C
+
+  - name: Blood Raven
+    first_word_a: Blood
+    first_word_b: Slash
+    second_word_a: Raven
+    second_word_b: Crow
+    rating: C
+
+  - name: Silver Sword
+    first_word_a: Silver
+    first_word_b: Arck
+    second_word_a: Sword
+    second_word_b: Javelin
+    rating: C
+
+  # Note: KAZOON lists this part's weight as 540, but it's actually 640
+  - name: Sky Horse
+    first_word_a: Sky
+    first_word_b: Acro
+    second_word_a: Horse
+    second_word_b: Mustang
+    rating: C
+
+  - name: Space Cancer
+    first_word_a: Space
+    first_word_b: Astro
+    second_word_a: Cancer
+    second_word_b: Crab
+    rating: C
+
+  - name: Aqua Goose
+    first_word_a: Aqua
+    first_word_b: Frost
+    second_word_a: Goose
+    second_word_b: Drake
+    rating: C
+
+  - name: Wild Chariot
+    first_word_a: Wild
+    first_word_b: Strong
+    second_word_a: Chariot
+    second_word_b: Tank
+    rating: B
+
+  - name: Fire Wolf
+    first_word_a: Fire
+    first_word_b: Burning
+    second_word_a: Wolf
+    second_word_b: Coyote
+    rating: B
+
+  - name: Mad Bull
+    first_word_a: Mad
+    first_word_b: Rowdy
+    second_word_a: Bull
+    second_word_b: Beetle
+    rating: B
+
+  - name: Metal Shell
+    first_word_a: Metal
+    first_word_b: Steel
+    second_word_a: Shell
+    second_word_b: Turtle
+    rating: B
+
+  - name: Valiant Jaguar
+    first_word_a: Valiant
+    first_word_b: Berserk
+    second_word_a: Jaguar
+    second_word_b: Panther
+    rating: B
+
+  - name: Giant Planet
+    first_word_a: Giant
+    first_word_b: Cosmic
+    second_word_a: Planet
+    second_word_b: Circle
+    rating: B
+
+  - name: Grand Base
+    first_word_a: Grand
+    first_word_b: Great
+    second_word_a: Base
+    second_word_b: General
+    rating: A
+
+  - name: Dread Hammer
+    first_word_a: Dread
+    first_word_b: Gallant
+    second_word_a: Hammer
+    second_word_b: Gantlet
+    rating: A
+
+  - name: Big Tyrant
+    first_word_a: Big
+    first_word_b: Jumbo
+    second_word_a: Tyrant
+    second_word_b: Emperor
+    rating: A
+
+  - name: Megalo Cruiser
+    first_word_a: Megalo
+    first_word_b: Heavy
+    second_word_a: Cruiser
+    second_word_b: Bruiser
+    rating: A
+
+cockpit_parts:
+
+  - name: Windy Shark
+    first_word_a: Windy
+    first_word_b: Slash
+    second_word_a: Shark
+    second_word_b: Typhoon
+    rating: E
+
+  - name: Rave Drifter
+    first_word_a: Rave
+    first_word_b: Active
+    second_word_a: Drifter
+    second_word_b: Gambler
+    rating: E
+
+  - name: Aerial Bullet
+    first_word_a: Aerial
+    first_word_b: Air
+    second_word_a: Bullet
+    second_word_b: Shot
+    rating: E
+
+  - name: Dark Chaser
+    first_word_a: Dark
+    first_word_b: Shadow
+    second_word_a: Chaser
+    second_word_b: Sniper
+    rating: E
+
+  - name: Moon Snail
+    first_word_a: Moon
+    first_word_b: Lunar
+    second_word_a: Snail
+    second_word_b: Lobster
+    rating: D
+
+  - name: Crystal Egg
+    first_word_a: Crystal
+    first_word_b: Royal
+    second_word_a: Egg
+    second_word_b: Rider
+    rating: D
+
+  - name: Blast Camel
+    first_word_a: Blast
+    first_word_b: Blaze
+    second_word_a: Camel
+    second_word_b: Giraffe
+    rating: D
+
+  - name: Wonder Worm
+    first_word_a: Wonder
+    first_word_b: Miracle
+    second_word_a: Worm
+    second_word_b: Insect
+    rating: D
+
+  - name: Rush Cyclone
+    first_word_a: Rush
+    first_word_b: Dash
+    second_word_a: Cyclone
+    second_word_b: Twister
+    rating: D
+
+  - name: Sonic Soldier
+    first_word_a: Sonic
+    first_word_b: Highway
+    second_word_a: Soldier
+    second_word_b: Fighter
+    rating: C
+
+  - name: Scud Viper
+    first_word_a: Scud
+    first_word_b: Misty
+    second_word_a: Viper
+    second_word_b: Serpent
+    rating: C
+
+  - name: Bright Spear
+    first_word_a: Bright
+    first_word_b: Shining
+    second_word_a: Spear
+    second_word_b: Lancer
+    rating: C
+
+  - name: Red Rex
+    first_word_a: Red
+    first_word_b: Crimson
+    second_word_a: Rex
+    second_word_b: King
+    rating: C
+
+  - name: Muscle Gorilla
+    first_word_a: Muscle
+    first_word_b: Spicy
+    second_word_a: Gorilla
+    second_word_b: Tusk
+    rating: C
+
+  - name: Cyber Fox
+    first_word_a: Cyber
+    first_word_b: Jet
+    second_word_a: Fox
+    second_word_b: Vixen
+    rating: C
+
+  - name: Round Disk
+    first_word_a: Round
+    first_word_b: Flat
+    second_word_a: Disk
+    second_word_b: Saucer
+    rating: C
+
+  - name: Super Lynx
+    first_word_a: Super
+    first_word_b: Ultra
+    second_word_a: Lynx
+    second_word_b: Legion
+    rating: B
+
+  - name: Heat Snake
+    first_word_a: Heat
+    first_word_b: Flame
+    second_word_a: Snake
+    second_word_b: Lizard
+    rating: B
+
+  - name: Energy Crest
+    first_word_a: Energy
+    first_word_b: Fever
+    second_word_a: Crest
+    second_word_b: Unicorn
+    rating: B
+
+  - name: Spark Bird
+    first_word_a: Spark
+    first_word_b: Plasma
+    second_word_a: Bird
+    second_word_b: Kite
+    rating: B
+
+  - name: Hyper Stream
+    first_word_a: Hyper
+    first_word_b: Battle
+    second_word_a: Stream
+    second_word_b: Vortex
+    rating: B
+
+  - name: Crazy Buffalo
+    first_word_a: Crazy
+    first_word_b: Mighty
+    second_word_a: Buffalo
+    second_word_b: Bison
+    rating: A
+
+  - name: Combat Cannon
+    first_word_a: Combat
+    first_word_b: Tornado
+    second_word_a: Cannon
+    second_word_b: Master
+    rating: A
+
+  - name: Garnet Phantom
+    first_word_a: Garnet
+    first_word_b: Jewel
+    second_word_a: Phantom
+    second_word_b: Mirage
+    rating: A
+
+  - name: Maximum Star
+    first_word_a: Maximum
+    first_word_b: Omega
+    second_word_a: Star
+    second_word_b: Wizard
+    rating: A
+
+booster_parts:
+
+  - name: Sunrise 140
+    machine_name_format: cockpit a body a
+    rating: E
+
+  - name: Euros -01
+    machine_name_format: cockpit a body b
+    rating: E
+
+  - name: Impulse 220
+    machine_name_format: cockpit b body b
+    rating: D
+
+  - name: Jupiter -Q
+    machine_name_format: body b cockpit a
+    rating: D
+
+  - name: Saturn -SG
+    machine_name_format: body b cockpit b
+    rating: D
+
+  - name: Bazooka -YS
+    machine_name_format: body a cockpit a
+    rating: D
+
+  - name: Crown -77
+    machine_name_format: cockpit a body a suffix
+    rating: D
+
+  - name: Mars -EX
+    machine_name_format: cockpit a body a suffix
+    rating: D
+
+  - name: Comet -V
+    machine_name_format: body a cockpit b suffix
+    rating: C
+
+  - name: Triangle -GT
+    machine_name_format: body b cockpit b suffix
+    rating: C
+
+  - name: Boxer -2C
+    machine_name_format: body a cockpit b
+    rating: C
+
+  - name: Bluster -X
+    machine_name_format: body b cockpit a suffix
+    rating: C
+
+  - name: Tiger -RZ
+    machine_name_format: cockpit b body a
+    rating: C
+
+  - name: Scorpion -R
+    machine_name_format: body b cockpit b suffix
+    rating: C
+
+  - name: Velocity -J
+    machine_name_format: body a cockpit a suffix
+    rating: C
+
+  - name: Extreme -ZZ
+    machine_name_format: cockpit a body b suffix
+    rating: B
+
+  - name: Meteor -RR
+    machine_name_format: cockpit b body b suffix
+    rating: B
+
+  - name: Shuttle -M2
+    machine_name_format: body a cockpit a suffix
+    rating: B
+
+  - name: Raiden -88
+    machine_name_format: cockpit a body b suffix
+    rating: B
+
+  - name: Titan -G4
+    machine_name_format: body b cockpit a suffix
+    rating: B
+
+  - name: Punisher -4X
+    machine_name_format: cockpit b body a suffix
+    rating: B
+
+  - name: Triple -Z
+    machine_name_format: cockpit a body a suffix
+    rating: A
+
+  - name: Hornet -FX
+    machine_name_format: body a cockpit b suffix
+    rating: A
+
+  - name: Devilfish -RX
+    machine_name_format: body a cockpit a suffix
+    rating: A
+
+  - name: Thunderbolt -V2
+    machine_name_format: cockpit b body b suffix
+    rating: A
+
+special_name_custom_machines:
+
+  - name: Alexander
+    body: Silver Sword
+    cockpit: Bright Spear
+    booster: Punisher -4X
+
+  - name: Almagest
+    body: Grand Base
+    cockpit: Spark Bird
+    booster: Extreme -ZZ
+
+  - name: Aqua Griffin
+    body: Aqua Goose
+    cockpit: Sonic Soldier
+    booster: Devilfish -RX
+
+  - name: Astro Scorpion
+    body: Space Cancer
+    cockpit: Dark Chaser
+    booster: Scorpion -R
+
+  - name: Bahamut
+    body: Mad Bull
+    cockpit: Crazy Buffalo
+    booster: Mars -EX
+
+  - name: Bandersnatch
+    body: Grand Base
+    cockpit: Sonic Soldier
+    booster: Meteor -RR
+
+  - name: Beat the Beast
+    body: Fire Wolf
+    cockpit: Muscle Gorilla
+    booster: Titan -G4
+
+  - name: Big Ace
+    body: Megalo Cruiser
+    cockpit: Rave Drifter
+    booster: Meteor -RR
+
+  - name: Bird of Paradise
+    body: Optical Wing
+    cockpit: Moon Snail
+    booster: Impulse 220
+
+  - name: Blue Streak
+    body: Holy Spider
+    cockpit: Wonder Worm
+    booster: Triangle -GT
+
+  - name: Blue Undine
+    body: Optical Wing
+    cockpit: Rave Drifter
+    booster: Shuttle -M2
+
+  - name: Carbuncle
+    body: Holy Spider
+    cockpit: Heat Snake
+    booster: Euros -01
+
+  - name: Centaurus
+    body: Wild Chariot
+    cockpit: Spark Bird
+    booster: Euros -01
+
+  - name: Chrono Symphony
+    body: Blood Raven
+    cockpit: Maximum Star
+    booster: Crown -77
+
+  - name: Crazy Minotaur
+    body: Rage Knight
+    cockpit: Crazy Buffalo
+    booster: Crown -77
+
+  - name: Curio Rider
+    body: Big Tyrant
+    cockpit: Maximum Star
+    booster: Bazooka -YS
+
+  - name: Desert Camel
+    body: Big Tyrant
+    cockpit: Blast Camel
+    booster: Bazooka -YS
+
+  - name: Don Quixote
+    body: Megalo Cruiser
+    cockpit: Energy Crest
+    booster: Jupiter -Q
+
+  - name: Dragoon
+    body: Speedy Dragon
+    cockpit: Bright Spear
+    booster: Raiden -88
+
+  - name: El Dorado
+    body: Metal Shell
+    cockpit: Round Disk
+    booster: Shuttle -M2
+
+  - name: Eliminator
+    body: Rapid Barrel
+    cockpit: Combat Cannon
+    booster: Devilfish -RX
+
+  - name: Emerald Pegasus
+    body: Sky Horse
+    cockpit: Spark Bird
+    booster: Impulse 220
+
+  - name: Enigma
+    body: Silver Sword
+    cockpit: Wonder Worm
+    booster: Triangle -GT
+
+  - name: Excalibur
+    body: Silver Sword
+    cockpit: Maximum Star
+    booster: Punisher -4X
+
+  - name: Fantasista
+    body: Liberty Manta
+    cockpit: Scud Viper
+    booster: Triple -Z
+
+  - name: Final Evolution
+    body: Galaxy Falcon
+    cockpit: Crazy Buffalo
+    booster: Shuttle -M2
+
+  - name: Final Revolution
+    body: Dread Hammer
+    cockpit: Crazy Buffalo
+    booster: Punisher -4X
+
+  - name: Fire Ball
+    body: Fire Wolf
+    cockpit: Garnet Phantom
+    booster: Boxer -2C
+
+  - name: Fortissimo
+    body: Optical Wing
+    cockpit: Red Rex
+    booster: Jupiter -Q
+
+  - name: Gargoyle
+    body: Funny Swallow
+    cockpit: Bright Spear
+    booster: Boxer -2C
+
+  - name: Gladiator
+    body: Galaxy Falcon
+    cockpit: Rush Cyclone
+    booster: Hornet -FX
+
+  - name: Grand Elephant
+    body: Valiant Jaguar
+    cockpit: Rave Drifter
+    booster: Extreme -ZZ
+
+  - name: Ground Wave
+    body: Liberty Manta
+    cockpit: Sonic Soldier
+    booster: Jupiter -Q
+
+  - name: Hard Banger
+    body: Megalo Cruiser
+    cockpit: Combat Cannon
+    booster: Thunderbolt -V2
+
+  - name: Hermes Star
+    body: Rage Knight
+    cockpit: Rush Cyclone
+    booster: Sunrise 140
+
+  - name: Hermit Crab
+    body: Space Cancer
+    cockpit: Rave Drifter
+    booster: Meteor -RR
+
+  - name: High Roller
+    body: Big Tyrant
+    cockpit: Rave Drifter
+    booster: Bazooka -YS
+
+  - name: Hippopotamus
+    body: Megalo Cruiser
+    cockpit: Crystal Egg
+    booster: Saturn -SG
+
+  - name: Icarus Wing
+    body: Funny Swallow
+    cockpit: Dark Chaser
+    booster: Saturn -SG
+
+  - name: Jabberwock
+    body: Galaxy Falcon
+    cockpit: Super Lynx
+    booster: Extreme -ZZ
+
+  - name: Junk Rider
+    body: Speedy Dragon
+    cockpit: Maximum Star
+    booster: Bazooka -YS
+
+  - name: Kaleidoscope
+    body: Rapid Barrel
+    cockpit: Rush Cyclone
+    booster: Saturn -SG
+
+  - name: King Neptune
+    body: Grand Base
+    cockpit: Super Lynx
+    booster: Titan -G4
+
+  - name: Leviathan
+    body: Dread Hammer
+    cockpit: Dark Chaser
+    booster: Sunrise 140
+
+  - name: Liberator
+    body: Funny Swallow
+    cockpit: Scud Viper
+    booster: Bluster -X
+
+  - name: Liberty Triton
+    body: Fire Wolf
+    cockpit: Heat Snake
+    booster: Impulse 220
+
+  - name: Long Shot
+    body: Rapid Barrel
+    cockpit: Aerial Bullet
+    booster: Scorpion -R
+
+  - name: Mammoth Impact
+    body: Big Tyrant
+    cockpit: Hyper Stream
+    booster: Sunrise 140
+
+  - name: Master Work
+    body: Sky Horse
+    cockpit: Moon Snail
+    booster: Titan -G4
+
+  - name: Muscle Empress
+    body: Big Tyrant
+    cockpit: Round Disk
+    booster: Crown -77
+
+  - name: Nightmare
+    body: Grand Base
+    cockpit: Aerial Bullet
+    booster: Thunderbolt -V2
+
+  - name: Notorious Gear
+    body: Dread Hammer
+    cockpit: Crazy Buffalo
+    booster: Impulse 220
+
+  - name: Out Rider
+    body: Funny Swallow
+    cockpit: Windy Shark
+    booster: Bazooka -YS
+
+  - name: Paper Craft
+    body: Speedy Dragon
+    cockpit: Garnet Phantom
+    booster: Euros -01
+
+  - name: Pleiades
+    body: Holy Spider
+    cockpit: Maximum Star
+    booster: Jupiter -Q
+
+  - name: Poseidon
+    body: Dread Hammer
+    cockpit: Rave Drifter
+    booster: Meteor -RR
+
+  - name: Prominence
+    body: Metal Shell
+    cockpit: Hyper Stream
+    booster: Mars -EX
+
+  - name: Queen Sapphire
+    body: Splash Whale
+    cockpit: Crystal Egg
+    booster: Comet -V
+
+  - name: Red Salamander
+    body: Splash Whale
+    cockpit: Heat Snake
+    booster: Triangle -GT
+
+  - name: Salvation
+    body: Rapid Barrel
+    cockpit: Blast Camel
+    booster: Raiden -88
+
+  - name: Satellite Orb
+    body: Giant Planet
+    cockpit: Round Disk
+    booster: Punisher -4X
+
+  - name: Savanna Buggy
+    body: Optical Wing
+    cockpit: Heat Snake
+    booster: Euros -01
+
+  - name: Scorcher
+    body: Valiant Jaguar
+    cockpit: Garnet Phantom
+    booster: Sunrise 140
+
+  - name: Sleipnir
+    body: Sky Horse
+    cockpit: Rush Cyclone
+    booster: Bluster -X
+
+  - name: Sockdolager
+    body: Big Tyrant
+    cockpit: Muscle Gorilla
+    booster: Boxer -2C
+
+  - name: Southern Cross
+    body: Mad Bull
+    cockpit: Round Disk
+    booster: Hornet -FX
+
+  - name: Splash Mermaid
+    body: Aqua Goose
+    cockpit: Cyber Fox
+    booster: Impulse 220
+
+  - name: Strong Gustav
+    body: Big Tyrant
+    cockpit: Blast Camel
+    booster: Velocity -J
+
+  - name: Super Nova
+    body: Giant Planet
+    cockpit: Rave Drifter
+    booster: Bluster -X
+
+  - name: Thunder Storm
+    body: Rage Knight
+    cockpit: Hyper Stream
+    booster: Velocity -J
+
+  - name: Trail Blazer
+    body: Dread Hammer
+    cockpit: Energy Crest
+    booster: Sunrise 140
+
+  - name: Trickster
+    body: Optical Wing
+    cockpit: Cyber Fox
+    booster: Impulse 220
+
+  - name: Triumph
+    body: Valiant Jaguar
+    cockpit: Spark Bird
+    booster: Euros -01
+
+  - name: Turbulence
+    body: Aqua Goose
+    cockpit: Energy Crest
+    booster: Crown -77
+
+  - name: Valkyrie
+    body: Optical Wing
+    cockpit: Garnet Phantom
+    booster: Jupiter -Q
+
+  - name: Van Guard
+    body: Aqua Goose
+    cockpit: Combat Cannon
+    booster: Thunderbolt -V2
+
+  - name: White Sylph
+    body: Holy Spider
+    cockpit: Rush Cyclone
+    booster: Sunrise 140
+
+non_custom_machines:
+
+  - name: Dark Schneider
+  - name: Red Gazelle
+  - name: White Cat
+  - name: Golden Fox
+  - name: Iron Tiger
+  - name: Fire Stingray
+  - name: Wild Goose
+  - name: Blue Falcon
+  - name: Deep Claw
+  - name: Great Star
+  - name: Little Wyvern
+  - name: Mad Wolf
+  - name: Super Piranha
+  - name: Death Anchor
+  - name: Astro Robin
+  - name: Big Fang
+  - name: Sonic Phantom
+  - name: Green Panther
+  - name: Hyper Speeder
+  - name: Space Angler
+  - name: King Meteor
+  - name: Queen Meteor
+  - name: Twin Noritta
+  - name: Night Thunder
+  - name: Wild Boar
+  - name: Blood Hawk
+  - name: Wonder Wasp
+  - name: Mighty Typhoon
+  - name: Mighty Hurricane
+  - name: Crazy Bear
+  - name: Black Bull
+  - name: Fat Shark
+  - name: Cosmic Dolphin
+  - name: Pink Spider
+  - name: Magic Seagull
+  - name: Silver Rat
+  - name: Spark Moon
+  - name: Bunny Flash
+  - name: Groovy Taxi
+  - name: Rolling Turtle
+  - name: Rainbow Phoenix

@@ -1,0 +1,295 @@
+F-Zero GX:
+  - name: Cups
+    child_groups:
+      - name: Ruby Cup
+        child_groups:
+          - name: "Mute City: Twist Road"
+            show_charts_together: True
+            charts:
+              - name: Course Time
+                type: Course Time
+              - name: Lap Time
+                type: Lap Time
+              - name: Speed
+                type: Speed
+          - name: "Casino Palace: Split Oval"
+            show_charts_together: True
+            charts:
+              - name: Course Time
+                type: Course Time
+              - name: Lap Time
+                type: Lap Time
+              - name: Speed
+                type: Speed
+          - name: "Sand Ocean: Surface Slide"
+            show_charts_together: True
+            charts:
+              - name: Course Time
+                type: Course Time
+              - name: Lap Time
+                type: Lap Time
+              - name: Speed
+                type: Speed
+          - name: "Lightning: Loop Cross"
+            show_charts_together: True
+            charts:
+              - name: Course Time
+                type: Course Time
+              - name: Lap Time
+                type: Lap Time
+              - name: Speed
+                type: Speed
+          - name: "Aeropolis: Multiplex"
+            show_charts_together: True
+            charts:
+              - name: Course Time
+                type: Course Time
+              - name: Lap Time
+                type: Lap Time
+              - name: Speed
+                type: Speed
+      - name: Sapphire Cup
+        child_groups:
+          - name: "Big Blue: Drift Highway"
+            show_charts_together: True
+            charts:
+              - name: Course Time
+                type: Course Time
+              - name: Lap Time
+                type: Lap Time
+              - name: Speed
+                type: Speed
+          - name: "Port Town: Aero Dive"
+            show_charts_together: True
+            charts:
+              - name: Course Time
+                type: Course Time
+              - name: Lap Time
+                type: Lap Time
+              - name: Speed
+                type: Speed
+          - name: "Green Plant: Mobius Ring"
+            show_charts_together: True
+            charts:
+              - name: Course Time
+                type: Course Time
+              - name: Lap Time
+                type: Lap Time
+              - name: Speed
+                type: Speed
+          - name: "Port Town: Long Pipe"
+            show_charts_together: True
+            charts:
+              - name: Course Time
+                type: Course Time
+              - name: Lap Time
+                type: Lap Time
+              - name: Speed
+                type: Speed
+          - name: "Mute City: Serial Gaps"
+            show_charts_together: True
+            charts:
+              - name: Course Time
+                type: Course Time
+              - name: Lap Time
+                type: Lap Time
+              - name: Speed
+                type: Speed
+      - name: Emerald Cup
+        child_groups:
+          - name: "Fire Field: Cylinder Knot"
+            show_charts_together: True
+            charts:
+              - name: Course Time
+                type: Course Time
+              - name: Lap Time
+                type: Lap Time
+              - name: Speed
+                type: Speed
+          - name: "Green Plant: Intersection"
+            show_charts_together: True
+            charts:
+              - name: Course Time
+                type: Course Time
+              - name: Lap Time
+                type: Lap Time
+              - name: Speed
+                type: Speed
+          - name: "Casino Palace: Double Branches"
+            show_charts_together: True
+            charts:
+              - name: Course Time
+                type: Course Time
+              - name: Lap Time
+                type: Lap Time
+              - name: Speed
+                type: Speed
+          - name: "Lightning: Half Pipe"
+            show_charts_together: True
+            charts:
+              - name: Course Time
+                type: Course Time
+              - name: Lap Time
+                type: Lap Time
+              - name: Speed
+                type: Speed
+          - name: "Big Blue: Ordeal"
+            show_charts_together: True
+            charts:
+              - name: Course Time
+                type: Course Time
+              - name: Lap Time
+                type: Lap Time
+              - name: Speed
+                type: Speed
+      - name: Diamond Cup
+        child_groups:
+          - name: "Cosmo Terminal: Trident"
+            show_charts_together: True
+            charts:
+              - name: Course Time
+                type: Course Time
+              - name: Lap Time
+                type: Lap Time
+              - name: Speed
+                type: Speed
+          - name: "Sand Ocean: Lateral Shift"
+            show_charts_together: True
+            charts:
+              - name: Course Time
+                type: Course Time
+              - name: Lap Time
+                type: Lap Time
+              - name: Speed
+                type: Speed
+          - name: "Fire Field: Undulation"
+            show_charts_together: True
+            charts:
+              - name: Course Time
+                type: Course Time
+              - name: Lap Time
+                type: Lap Time
+              - name: Speed
+                type: Speed
+          - name: "Aeropolis: Dragon Slope"
+            show_charts_together: True
+            charts:
+              - name: Course Time
+                type: Course Time
+              - name: Lap Time
+                type: Lap Time
+              - name: Speed
+                type: Speed
+          - name: "Phantom Road: Slim-Line Slits"
+            show_charts_together: True
+            charts:
+              - name: Course Time
+                type: Course Time
+              - name: Lap Time
+                type: Lap Time
+              - name: Speed
+                type: Speed
+      - name: AX Cup
+        child_groups:
+          - name: "Aeropolis: Screw Drive"
+            show_charts_together: True
+            charts:
+              - name: Course Time
+                type: Course Time
+              - name: Lap Time
+                type: Lap Time
+              - name: Speed
+                type: Speed
+          - name: "Outer Space: Meteor Stream"
+            show_charts_together: True
+            charts:
+              - name: Course Time
+                type: Course Time
+              - name: Lap Time
+                type: Lap Time
+              - name: Speed
+                type: Speed
+          - name: "Port Town: Cylinder Wave"
+            show_charts_together: True
+            charts:
+              - name: Course Time
+                type: Course Time
+              - name: Lap Time
+                type: Lap Time
+              - name: Speed
+                type: Speed
+          - name: "Lightning: Thunder Road"
+            show_charts_together: True
+            charts:
+              - name: Course Time
+                type: Course Time
+              - name: Lap Time
+                type: Lap Time
+              - name: Speed
+                type: Speed
+          - name: "Green Plant: Spiral"
+            show_charts_together: True
+            charts:
+              - name: Course Time
+                type: Course Time
+              - name: Lap Time
+                type: Lap Time
+              - name: Speed
+                type: Speed
+          - name: "Mute City: Sonic Oval"
+            show_charts_together: True
+            charts:
+              - name: Course Time
+                type: Course Time
+              - name: Lap Time
+                type: Lap Time
+              - name: Speed
+                type: Speed
+  - name: Story
+    common_chart_type: Course Time
+    child_groups:
+      - name: Chapter 1
+        charts:
+          - Normal
+          - Hard
+          - Very Hard
+      - name: Chapter 2
+        charts:
+          - Normal
+          - Hard
+          - Very Hard
+      - name: Chapter 3
+        charts:
+          - Normal
+          - Hard
+          - Very Hard
+      - name: Chapter 4
+        charts:
+          - Normal
+          - Hard
+          - Very Hard
+      - name: Chapter 5
+        charts:
+          - Normal
+          - Hard
+          - Very Hard
+      - name: Chapter 6
+        charts:
+          - Normal
+          - Hard
+          - Very Hard
+      - name: Chapter 7
+        charts:
+          - Normal
+          - Hard
+          - Very Hard
+      - name: Chapter 8
+        charts:
+          - Normal
+          - Hard
+          - Very Hard
+      - name: Chapter 9
+        charts:
+          - Normal
+          - Hard
+          - Very Hard

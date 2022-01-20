@@ -1,0 +1,139 @@
+# Translating from FZC PHP ladders to FZC Django charts/ladders.
+
+- ladder_id: 4
+  game_name: F-Zero GX
+  cups:
+    - name: Ruby Cup
+      courses:
+        - "Mute City: Twist Road"
+        - "Casino Palace: Split Oval"
+        - "Sand Ocean: Surface Slide"
+        - "Lightning: Loop Cross"
+        - "Aeropolis: Multiplex"
+    - name: Sapphire Cup
+      courses:
+        - "Big Blue: Drift Highway"
+        - "Port Town: Aero Dive"
+        - "Green Plant: Mobius Ring"
+        - "Port Town: Long Pipe"
+        - "Mute City: Serial Gaps"
+    - name: Emerald Cup
+      courses:
+        - "Fire Field: Cylinder Knot"
+        - "Green Plant: Intersection"
+        - "Casino Palace: Double Branches"
+        - "Lightning: Half Pipe"
+        - "Big Blue: Ordeal"
+    - name: Diamond Cup
+      courses:
+        - "Cosmo Terminal: Trident"
+        - "Sand Ocean: Lateral Shift"
+        - "Fire Field: Undulation"
+        - "Aeropolis: Dragon Slope"
+        - "Phantom Road: Slim-Line Slits"
+    - name: AX Cup
+      courses:
+        - "Aeropolis: Screw Drive"
+        - "Outer Space: Meteor Stream"
+        - "Port Town: Cylinder Wave"
+        - "Lightning: Thunder Road"
+        - "Green Plant: Spiral"
+        - "Mute City: Sonic Oval"
+  record_types:
+    C: Course Time
+    L: Lap Time
+    S: Speed
+
+- ladder_id: 5
+  game_name: F-Zero GX
+  cups:
+    - name: Ruby Cup
+      courses:
+        - "Mute City: Twist Road"
+        - "Casino Palace: Split Oval"
+        - "Sand Ocean: Surface Slide"
+        - "Lightning: Loop Cross"
+        - "Aeropolis: Multiplex"
+    - name: Sapphire Cup
+      courses:
+        - "Big Blue: Drift Highway"
+        - "Port Town: Aero Dive"
+        - "Green Plant: Mobius Ring"
+        - "Port Town: Long Pipe"
+        - "Mute City: Serial Gaps"
+    - name: Emerald Cup
+      courses:
+        - "Fire Field: Cylinder Knot"
+        - "Green Plant: Intersection"
+        - "Casino Palace: Double Branches"
+        - "Lightning: Half Pipe"
+        - "Big Blue: Ordeal"
+    - name: Diamond Cup
+      courses:
+        - "Cosmo Terminal: Trident"
+        - "Sand Ocean: Lateral Shift"
+        - "Fire Field: Undulation"
+        - "Aeropolis: Dragon Slope"
+        - "Phantom Road: Slim-Line Slits"
+    - name: AX Cup
+      courses:
+        - "Aeropolis: Screw Drive"
+        - "Outer Space: Meteor Stream"
+        - "Port Town: Cylinder Wave"
+        - "Lightning: Thunder Road"
+        - "Green Plant: Spiral"
+        - "Mute City: Sonic Oval"
+  record_types:
+    C: Course Time
+    L: Lap Time
+    S: Speed
+  filters:
+    Setting: 100%
+    Checkpoint skips: "No"
+
+- ladder_id: 8
+  game_name: F-Zero GX
+  cups:
+    - name: Ruby Cup
+      courses:
+        - "Mute City: Twist Road"
+        - "Casino Palace: Split Oval"
+        - "Sand Ocean: Surface Slide"
+        - "Lightning: Loop Cross"
+        - "Aeropolis: Multiplex"
+    - name: Sapphire Cup
+      courses:
+        - "Big Blue: Drift Highway"
+        - "Port Town: Aero Dive"
+        - "Green Plant: Mobius Ring"
+        - "Port Town: Long Pipe"
+        - "Mute City: Serial Gaps"
+    - name: Emerald Cup
+      courses:
+        - "Fire Field: Cylinder Knot"
+        - "Green Plant: Intersection"
+        - "Casino Palace: Double Branches"
+        - "Lightning: Half Pipe"
+        - "Big Blue: Ordeal"
+    - name: Diamond Cup
+      courses:
+        - "Cosmo Terminal: Trident"
+        - "Sand Ocean: Lateral Shift"
+        - "Fire Field: Undulation"
+        - "Aeropolis: Dragon Slope"
+        - "Phantom Road: Slim-Line Slits"
+    - name: AX Cup
+      courses:
+        - "Aeropolis: Screw Drive"
+        - "Outer Space: Meteor Stream"
+        - "Port Town: Cylinder Wave"
+        - "Lightning: Thunder Road"
+        - "Green Plant: Spiral"
+        - "Mute City: Sonic Oval"
+  record_types:
+    C: Course Time
+    L: Lap Time
+    S: Speed
+  filters:
+    Setting: 0%
+    Checkpoint skips: "No"

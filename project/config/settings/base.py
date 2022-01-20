@@ -42,7 +42,13 @@ INSTALLED_APPS = [
 
     'charts',
     'chart_groups',
+    'chart_types',
+    'filters',
+    'filter_groups',
+    'fzc_data_import',
     'games',
+    'players',
+    'records',
 ]
 
 # The order of middleware classes is important.

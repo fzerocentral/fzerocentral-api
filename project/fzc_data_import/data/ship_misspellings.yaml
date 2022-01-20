@@ -1,0 +1,73 @@
+# Known misspellings / alternate spellings in the FZC PHP database's 'ship'
+# field. This does not include misspellings which are purely
+# punctuation/space/case based.
+#
+# NOTE: For the final import, ALL pre-conversion machine strings should be
+# included in the record's edit history message when importing records,
+# even if they're not in these misspellings. Just in case there are conversion
+# inaccuracies.
+# Example: 'Gallant Star' is a valid machine, but it could very well mean
+# 'Gallant Star-G4'.
+
+Acro St-G4: Acro Star-G4
+Aero Lynx -G4: Acro Lynx-G4
+Arch Cannon-G4: Arck Cannon-G4
+Arch Lynx-G4: Arck Lynx-G4
+Acro Cannon G4/100%: Acro Cannon-G4
+acro canon-g4: Acro Cannon-G4
+Arco Cannon- G4: Acro Cannon-G4
+Berserk Canon G4: Berserk Cannon-G4
+Blook Hawk: Blood Hawk
+blue falcn: Blue Falcon
+Bright Goose-2: Bright Goose-Z
+Cosmic Cannon-G4 100%: Cosmic Cannon-G4
+DEATH ACHOR: Death Anchor
+Fat Shark 100%: Fat Shark
+Fat Skark: Fat Shark
+FS: Fat Shark
+Frost Cannon-64: Frost Cannon-G4
+Frost Canon G4: Frost Cannon-G4
+Frost Lynx-64: Frost Lynx-G4
+Frost Lynux G4: Frost Lynx-G4
+Frost Star-64: Frost Star-G4
+Gallant Cannon-64: Gallant Cannon-G4
+Gallant Cannon-G4y: Gallant Cannon-G4
+gallant canon g4: Gallant Cannon-G4
+GCG4: Gallant Cannon-G4
+Galant Star: Gallant Star-G4
+Gallant-Star-64: Gallant Star-G4
+Galant Star-G4: Gallant Star-G4
+Gallant Strar-G4: Gallant Star-G4
+Gallant star-g5: Gallant Star-G4
+Gallant Lynx-64: Gallant Lynx-G4
+GSG4: Gallant Star-G4
+GS-Q4: Gallant Star-G4
+ï¼¨ï¼¡ï¼²ï¼¤ ï¼¢ï¼¡ï¼®ï¼§ï¼¥ï¼²: Hard Banger
+Highway Gauntlet-V2: Highway Gantlet-V2
+Jewel Gauntlet-V2: Jewel Gantlet-V2
+Jewel Vyvern V-2: Jewel Wyvern-V2
+King Keptune: King Neptune
+Mighty Gazelle: Red Gazelle
+Omega Gauntlet-V2: Omega Gantlet-V2
+Photon Cannon-G$: Photon Cannon-G4
+queen météor: Queen Meteor
+quick canon-g4: Quick Cannon-G4
+Quick Cannon-64: Quick Cannon-G4
+Quick Cannin-G4: Quick Cannon-G4
+Quick Gannon-G4: Quick Cannon-G4
+Quick Cannon-G4 100%: Quick Cannon-G4
+QSG4: Quick Star-G4
+Rollin Turtle: Rolling Turtle
+Rowdy Star-64: Rowdy Star-G4
+Sonc Phantom: Sonic Phantom
+Sonic Phanom: Sonic Phantom
+Spark Goose-2: Spark Goose-Z
+tornado glinder: Tornado Glider
+tornado glinder v2: Tornado Glider-V2
+Tornado Gauntlet-V2: Tornado Gantlet-V2
+Tornado Guantlet-V2: Tornado Gantlet-V2
+Tornado Wywern-V2: Tornado Wyvern-V2
+Twin Norita: Twin Noritta
+Twin Norrita: Twin Noritta
+TWWIN NORRITA: Twin Noritta
+Wild Cannon-AX: Wild Cannon-RX

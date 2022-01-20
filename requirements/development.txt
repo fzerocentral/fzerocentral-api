@@ -1,2 +1,7 @@
 # Include the base.txt requirements.
 -r base.txt
+
+# For fzc_data_import commands.
+mysqlclient
+PyYAML
+tqdm

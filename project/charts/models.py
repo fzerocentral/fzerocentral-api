@@ -1,18 +1,19 @@
 from django.db import models
 
 from chart_groups.models import ChartGroup
+from chart_types.models import ChartType
 
 
 class Chart(models.Model):
     name = models.CharField(max_length=200)
+
     chart_group = models.ForeignKey(
         ChartGroup, on_delete=models.CASCADE, related_name='charts')
-
     # Positive integer specifying order of this chart group relative to
     # others under the same parent.
     order_in_group = models.IntegerField()
 
-    # TODO: Add chart type FK field
+    chart_type = models.ForeignKey(ChartType, on_delete=models.RESTRICT)
 
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
