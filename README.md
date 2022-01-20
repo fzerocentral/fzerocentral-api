@@ -1,4 +1,4 @@
-# fzerocentral-api-django
+# fzerocentral-api
 
 Data API for the (upcoming) F-Zero Central website. Uses the Django web framework.
 
