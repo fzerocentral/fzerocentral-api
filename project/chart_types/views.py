@@ -1,8 +1,9 @@
-from django.db.models import F
 from rest_framework.generics import (
     ListAPIView, ListCreateAPIView,
     RetrieveAPIView, RetrieveUpdateDestroyAPIView)
 
+from core.utils import (
+    delete_ordered_obj_prep, insert_ordered_obj_prep, reorder_obj_prep)
 from .models import ChartType, CTFG
 from .serializers import ChartTypeSerializer, CTFGSerializer
 
@@ -46,28 +47,12 @@ class CTFGIndex(ListCreateAPIView):
         return queryset
 
     def create(self, request, *args, **kwargs):
-        order_in_chart_type = request.data.get('order_in_chart_type')
         existing_ctfgs = CTFG.objects.filter(
             chart_type=request.data['chart_type']['id'])
-
-        if order_in_chart_type is None:
-            # By default, order at the end, after all existing CTFGs.
-            order_in_chart_type = existing_ctfgs.count() + 1
-        elif order_in_chart_type < 1:
-            # Restrict the order to the accepted range.
-            order_in_chart_type = 1
-        elif order_in_chart_type > existing_ctfgs.count() + 1:
-            # Restrict the order to the accepted range.
-            order_in_chart_type = existing_ctfgs.count() + 1
-
-        # Change other CTFGs' order as needed to accommodate the new CTFG. We
-        # need to +1 the order of CTFGs coming after this one.
-        later_ctfgs = existing_ctfgs.filter(
-            order_in_chart_type__gte=order_in_chart_type)
-        later_ctfgs.update(order_in_chart_type=F('order_in_chart_type')+1)
-
-        # Then we insert the new CTFG.
-        request.data['order_in_chart_type'] = order_in_chart_type
+        # Prep before insertion.
+        request = insert_ordered_obj_prep(
+            request, 'order_in_chart_type', existing_ctfgs)
+        # Insert the new CTFG.
         return super().create(request, *args, **kwargs)
 
 
@@ -81,47 +66,16 @@ class CTFGDetail(RetrieveUpdateDestroyAPIView):
     def patch(self, request, *args, **kwargs):
         ctfg = self.get_object()
         ct_ctfgs = CTFG.objects.filter(chart_type=ctfg.chart_type)
-        new_order = request.data.get('order_in_chart_type')
-
-        if new_order is not None:
-            old_order = ctfg.order_in_chart_type
-
-            # Restrict the order to the accepted range.
-            if new_order < 1:
-                new_order = 1
-            elif new_order > ct_ctfgs.count():
-                new_order = ct_ctfgs.count()
-            request.data['order_in_chart_type'] = new_order
-
-            # Inc/dec the order of CTFGs between this CTFG's old and new order,
-            # then set this CTFG to the desired order.
-            if old_order < new_order:
-                # e.g. ABCDEF -> ABDEFC (moved C)
-                # CTFGs in between the old and new positions move backward.
-                affected_ctfgs = ct_ctfgs.filter(
-                    order_in_chart_type__gt=old_order,
-                    order_in_chart_type__lte=new_order)
-                affected_ctfgs.update(
-                    order_in_chart_type=F('order_in_chart_type')-1)
-            elif new_order < old_order:
-                # e.g. ABCDEF -> ABFCDE (moved F)
-                # CTFGs in between the old and new positions move forward.
-                affected_ctfgs = ct_ctfgs.filter(
-                    order_in_chart_type__lt=old_order,
-                    order_in_chart_type__gte=new_order)
-                affected_ctfgs.update(
-                    order_in_chart_type=F('order_in_chart_type')+1)
-
+        # Prep before reorder (if any).
+        request = reorder_obj_prep(
+            request, 'order_in_chart_type', ctfg, ct_ctfgs)
+        # Edit CTFG.
         return super().patch(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
-        # Decrement the order of CTFGs coming after
-        # this CTFG, then delete this CTFG.
         ctfg = self.get_object()
         ct_ctfgs = CTFG.objects.filter(chart_type=ctfg.chart_type)
-        affected_ctfgs = ct_ctfgs.filter(
-            order_in_chart_type__gt=ctfg.order_in_chart_type)
-        affected_ctfgs.update(
-            order_in_chart_type=F('order_in_chart_type')-1)
-
+        # Prep before delete.
+        delete_ordered_obj_prep('order_in_chart_type', ctfg, ct_ctfgs)
+        # Delete CTFG.
         return super().delete(request, *args, **kwargs)
