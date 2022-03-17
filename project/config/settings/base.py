@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'filter_groups',
     'fzc_data_import',
     'games',
+    'ladders',
     'players',
     'records',
 ]
