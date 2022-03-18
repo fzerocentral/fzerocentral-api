@@ -4,7 +4,8 @@ from rest_framework.test import APIClient, APITestCase
 
 from filter_groups.models import FilterGroup
 from games.models import Game
-from .models import ChartType, CTFG
+from ..models import ChartType, CTFG
+from .utils import create_ctfg
 
 
 class CTFGIndexTest(APITestCase):
@@ -26,35 +27,8 @@ class CTFGIndexTest(APITestCase):
         cls.fg4 = FilterGroup(name="FG4")
         cls.fg4.save()
 
-    @staticmethod
-    def insert_ctfg(ct, fg, order=None):
-        data = {
-            'type': 'chart-type-filter-groups',
-            'relationships': {
-                'chart-type': {
-                    'data': {
-                        'type': 'chart-types',
-                        'id': ct.id,
-                    }
-                },
-                'filter-group': {
-                    'data': {
-                        'type': 'filter-groups',
-                        'id': fg.id,
-                    }
-                },
-            },
-        }
-        if order is not None:
-            data['attributes'] = {'order-in-chart-type': order}
-
-        client = APIClient()
-        response = client.post(
-            reverse('chart_type_filter_groups:index'), {'data': data})
-        return response
-
     def test_insert_only_ctfg(self):
-        response = self.insert_ctfg(self.ct1, self.fg1)
+        response = create_ctfg(self.ct1, self.fg1)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_insert_first_ctfg(self):
@@ -63,13 +37,13 @@ class CTFGIndexTest(APITestCase):
             chart_type=self.ct1, filter_group=self.fg1, order_in_chart_type=1)
         ctfg1.save()
 
-        self.insert_ctfg(self.ct1, self.fg2, order=1)
+        create_ctfg(self.ct1, self.fg2, order=1)
 
         ctfg1.refresh_from_db()
         self.assertEqual(ctfg1.order_in_chart_type, 2)
 
     def test_insert_ctfg_beyond_minimum_order(self):
-        response = self.insert_ctfg(self.ct1, self.fg1, order=0)
+        response = create_ctfg(self.ct1, self.fg1, order=0)
         self.assertEqual(response.data['order_in_chart_type'], 1)
 
     def test_insert_last_ctfg(self):
@@ -78,7 +52,7 @@ class CTFGIndexTest(APITestCase):
             chart_type=self.ct1, filter_group=self.fg1, order_in_chart_type=1)
         ctfg1.save()
 
-        self.insert_ctfg(self.ct1, self.fg2, order=2)
+        create_ctfg(self.ct1, self.fg2, order=2)
 
         ctfg1.refresh_from_db()
         self.assertEqual(ctfg1.order_in_chart_type, 1)
@@ -88,7 +62,7 @@ class CTFGIndexTest(APITestCase):
             chart_type=self.ct1, filter_group=self.fg1, order_in_chart_type=1)
         ctfg1.save()
 
-        response = self.insert_ctfg(self.ct1, self.fg2, order=3)
+        response = create_ctfg(self.ct1, self.fg2, order=3)
         self.assertEqual(response.data['order_in_chart_type'], 2)
 
     def test_insert_middle_ctfg(self):
@@ -103,7 +77,7 @@ class CTFGIndexTest(APITestCase):
             chart_type=self.ct1, filter_group=self.fg3, order_in_chart_type=3)
         ctfg3.save()
 
-        self.insert_ctfg(self.ct1, self.fg4, order=2)
+        create_ctfg(self.ct1, self.fg4, order=2)
 
         ctfg1.refresh_from_db()
         self.assertEqual(ctfg1.order_in_chart_type, 1)

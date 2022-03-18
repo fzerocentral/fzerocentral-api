@@ -2,6 +2,7 @@ from rest_framework.generics import (
     ListAPIView, ListCreateAPIView,
     RetrieveAPIView, RetrieveUpdateDestroyAPIView)
 
+from charts.models import Chart
 from core.utils import (
     delete_ordered_obj_prep, insert_ordered_obj_prep, reorder_obj_prep)
 from .models import ChartType, CTFG
@@ -42,6 +43,12 @@ class CTFGIndex(ListCreateAPIView):
         chart_type_id = self.request.query_params.get('chart_type_id')
         if chart_type_id is not None:
             queryset = queryset.filter(chart_type=chart_type_id).order_by(
+                'order_in_chart_type')
+
+        chart_id = self.request.query_params.get('chart_id')
+        if chart_id is not None:
+            chart = Chart.objects.get(id=chart_id)
+            queryset = queryset.filter(chart_type=chart.chart_type).order_by(
                 'order_in_chart_type')
 
         return queryset
