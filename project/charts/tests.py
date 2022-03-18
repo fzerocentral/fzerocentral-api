@@ -2,6 +2,7 @@ from django.urls import reverse
 from rest_framework.test import APIClient, APITestCase
 
 from chart_groups.models import ChartGroup
+from chart_types.models import ChartType
 from games.models import Game
 from .models import Chart
 
@@ -13,6 +14,9 @@ class IndexTest(APITestCase):
         super().setUpTestData()
         cls.game = Game(name="BS F-Zero Grand Prix 2")
         cls.game.save()
+        cls.ct1 = ChartType(
+            name="CT1", game=cls.game, format_spec=[], order_ascending=True)
+        cls.ct1.save()
         cls.cg_mc4 = ChartGroup(
             name="Mute City IV", order_in_parent=1, game=cls.game)
         cls.cg_mc4.save()
@@ -21,13 +25,16 @@ class IndexTest(APITestCase):
         cls.cg_bb2.save()
 
         cls.chart_mc4c = Chart(
-            name="Course Time", order_in_group=1, chart_group=cls.cg_mc4)
+            name="Course Time", order_in_group=1, chart_group=cls.cg_mc4,
+            chart_type=cls.ct1)
         cls.chart_mc4c.save()
         cls.chart_mc4l = Chart(
-            name="Lap Time", order_in_group=2, chart_group=cls.cg_mc4)
+            name="Lap Time", order_in_group=2, chart_group=cls.cg_mc4,
+            chart_type=cls.ct1)
         cls.chart_mc4l.save()
         cls.chart_bb2c = Chart(
-            name="Course Time", order_in_group=1, chart_group=cls.cg_bb2)
+            name="Course Time", order_in_group=1, chart_group=cls.cg_bb2,
+            chart_type=cls.ct1)
         cls.chart_bb2c.save()
 
     def test_filter_by_chart_group(self):
@@ -40,12 +47,18 @@ class IndexTest(APITestCase):
         self.assertEqual(len(results), 2)
         self.assertDictEqual(
             results[0],
-            dict(id=self.chart_mc4c.id, name="Course Time", order_in_group=1,
-                 chart_group=dict(type='chart-groups', id=str(self.cg_mc4.id))))
+            dict(
+                id=self.chart_mc4c.id, name="Course Time", order_in_group=1,
+                chart_group=dict(type='chart-groups', id=str(self.cg_mc4.id)),
+                chart_type=dict(type='chart-types', id=str(self.ct1.id)),
+            ))
         self.assertDictEqual(
             results[1],
-            dict(id=self.chart_mc4l.id, name="Lap Time", order_in_group=2,
-                 chart_group=dict(type='chart-groups', id=str(self.cg_mc4.id))))
+            dict(
+                id=self.chart_mc4l.id, name="Lap Time", order_in_group=2,
+                chart_group=dict(type='chart-groups', id=str(self.cg_mc4.id)),
+                chart_type=dict(type='chart-types', id=str(self.ct1.id)),
+            ))
 
 
 class DetailTest(APITestCase):
@@ -55,11 +68,15 @@ class DetailTest(APITestCase):
         super().setUpTestData()
         cls.game = Game(name="BS F-Zero Grand Prix 2")
         cls.game.save()
+        cls.ct1 = ChartType(
+            name="CT1", game=cls.game, format_spec=[], order_ascending=True)
+        cls.ct1.save()
         cls.cg_mc4 = ChartGroup(
             name="Mute City IV", order_in_parent=1, game=cls.game)
         cls.cg_mc4.save()
         cls.chart_mc4c = Chart(
-            name="Course Time", order_in_group=1, chart_group=cls.cg_mc4)
+            name="Course Time", order_in_group=1, chart_group=cls.cg_mc4,
+            chart_type=cls.ct1)
         cls.chart_mc4c.save()
 
     def test(self):
@@ -70,8 +87,11 @@ class DetailTest(APITestCase):
 
         self.assertDictEqual(
             response.data,
-            dict(id=self.chart_mc4c.id, name="Course Time", order_in_group=1,
-                 chart_group=dict(type='chart-groups', id=str(self.cg_mc4.id))))
+            dict(
+                id=self.chart_mc4c.id, name="Course Time", order_in_group=1,
+                chart_group=dict(type='chart-groups', id=str(self.cg_mc4.id)),
+                chart_type=dict(type='chart-types', id=str(self.ct1.id)),
+            ))
 
     def test_nonexistent(self):
         chart_id = self.chart_mc4c.id

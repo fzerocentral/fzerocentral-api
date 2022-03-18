@@ -4,6 +4,7 @@ from django.urls import reverse
 from rest_framework.test import APIClient, APITestCase
 
 from charts.models import Chart
+from chart_types.models import ChartType
 from games.models import Game
 from .models import ChartGroup
 
@@ -15,6 +16,9 @@ class IndexTest(APITestCase):
         super().setUpTestData()
         cls.game = Game(name="F-Zero")
         cls.game.save()
+        ct1 = ChartType(
+            name="CT1", game=cls.game, format_spec=[], order_ascending=True)
+        ct1.save()
         cls.cg_kl = ChartGroup(
             name="Knight League", order_in_parent=1, game=cls.game)
         cls.cg_kl.save()
@@ -26,13 +30,13 @@ class IndexTest(APITestCase):
             parent_group=cls.cg_kl)
         cls.cg_mc1.save()
         cls.chart_mc1c = Chart(
-            name="Course Time", order_in_group=1, chart_group=cls.cg_mc1)
+            name="Course Time", order_in_group=1, chart_group=cls.cg_mc1,
+            chart_type=ct1)
         cls.chart_mc1c.save()
 
-        cls.game_2 = Game(name="F-Zero: Maximum Velocity")
-        cls.game_2.save()
-        cls.cg_pc = ChartGroup(
-            name="Pawn Cup", order_in_parent=1, game=cls.game_2)
+        game_2 = Game(name="F-Zero: Maximum Velocity")
+        game_2.save()
+        ChartGroup(name="Pawn Cup", order_in_parent=1, game=game_2).save()
 
     def test_filter_by_game(self):
         client = APIClient()
@@ -95,6 +99,9 @@ class IndexQueryCountTest(APITestCase):
         super().setUpTestData()
         cls.game = Game(name="Game")
         cls.game.save()
+        ct1 = ChartType(
+            name="CT1", game=cls.game, format_spec=[], order_ascending=True)
+        ct1.save()
 
         # Make a chart group hierarchy with breadth and depth of at least 5.
         # And add about as many charts, some top level, some nested.
@@ -104,7 +111,8 @@ class IndexQueryCountTest(APITestCase):
                 name=f"Top level group {n}", order_in_parent=n, game=cls.game)
             cg.save()
             chart = Chart(
-                chart_group=cg, name=f"Chart {cg.id}", order_in_group=1)
+                chart_group=cg, name=f"Chart {cg.id}", order_in_group=1,
+                chart_type=ct1)
             chart.save()
 
         cg = ChartGroup(
@@ -119,7 +127,8 @@ class IndexQueryCountTest(APITestCase):
             prev_cg = cg
         for n in range(1, 5+1):
             chart = Chart(
-                chart_group=cg, name=f"Nested chart {cg.id}", order_in_group=n)
+                chart_group=cg, name=f"Nested chart {cg.id}", order_in_group=n,
+                chart_type=ct1)
             chart.save()
 
     def test_query_count(self):
@@ -139,6 +148,9 @@ class DetailTest(APITestCase):
         super().setUpTestData()
         cls.game = Game(name="F-Zero")
         cls.game.save()
+        ct1 = ChartType(
+            name="CT1", game=cls.game, format_spec=[], order_ascending=True)
+        ct1.save()
         cls.cg_kl = ChartGroup(
             name="Knight League", order_in_parent=1, game=cls.game)
         cls.cg_kl.save()
@@ -147,7 +159,8 @@ class DetailTest(APITestCase):
             parent_group=cls.cg_kl)
         cls.cg_mc1.save()
         cls.chart_mc1c = Chart(
-            name="Course Time", order_in_group=1, chart_group=cls.cg_mc1)
+            name="Course Time", order_in_group=1, chart_group=cls.cg_mc1,
+            chart_type=ct1)
         cls.chart_mc1c.save()
 
     def test(self):
