@@ -2,28 +2,23 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 
 
-def create_ctfg(ct, fg, order=None):
+def link_ct_and_fg(chart_type, filter_group):
+    filter_groups = set(chart_type.filter_groups.all())
+    filter_groups.add(filter_group)
+    filter_groups_data = [
+        dict(id=fg.id, type='filter-groups') for fg in filter_groups]
     data = {
-        'type': 'chart-type-filter-groups',
+        'type': 'chart-types',
+        'id': chart_type.id,
         'relationships': {
-            'chart-type': {
-                'data': {
-                    'type': 'chart-types',
-                    'id': ct.id,
-                }
-            },
-            'filter-group': {
-                'data': {
-                    'type': 'filter-groups',
-                    'id': fg.id,
-                }
+            'filter-groups': {
+                'data': filter_groups_data
             },
         },
     }
-    if order is not None:
-        data['attributes'] = {'order-in-chart-type': order}
 
     client = APIClient()
-    response = client.post(
-        reverse('chart_type_filter_groups:index'), {'data': data})
+    response = client.patch(
+        reverse('chart_types:detail', args=[chart_type.id]),
+        {'data': data})
     return response

@@ -1,7 +1,7 @@
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
-from chart_types.models import ChartType, CTFG
+from chart_types.models import ChartType
 from filters.models import Filter
 from filter_groups.models import FilterGroup
 from games.models import Game
@@ -9,10 +9,14 @@ from games.models import Game
 
 class Command(BaseCommand):
     help = """
-    Populate the FZC database from scratch.
+    Populate the FZC database from scratch. Assumes the migration structure is
+    there, but no data.
     
     Example usage:
     python manage.py full_import_for_fzc localhost 3306 fzc_php root
+    
+    Note that you can clear the data (without clearing the table structure)
+    with `python manage.py flush`.
     """
 
     def add_arguments(self, parser):
@@ -48,11 +52,14 @@ class Command(BaseCommand):
         speed.save()
 
         machine = FilterGroup(
-            name="Machine", description="Racing machine used for the run.",
+            game=g, name="Machine",
+            show_by_default=True, order_in_game=1,
+            description="Racing machine used for the run.",
             kind=FilterGroup.Kinds.SELECT.value)
         machine.save()
         setting = FilterGroup(
-            name="Setting",
+            game=g, name="Setting",
+            show_by_default=True, order_in_game=2,
             description="Acceleration/max speed setting used for the run."
                         " 0% all the way at the left, 100% all the way at"
                         " the right.",
@@ -61,7 +68,8 @@ class Command(BaseCommand):
         Filter(name="0%", numeric_value=0, filter_group=setting).save()
         Filter(name="100%", numeric_value=100, filter_group=setting).save()
         checks = FilterGroup(
-            name="Checkpoint skips",
+            game=g, name="Checkpoint skips",
+            show_by_default=False, order_in_game=3,
             description="Whether checkpoint skipping"
                         " was used in the run or not.",
             kind=FilterGroup.Kinds.SELECT.value)
@@ -70,16 +78,9 @@ class Command(BaseCommand):
         Filter(name="No", filter_group=checks).save()
 
         for ct in [course, lap, speed]:
-            CTFG(
-                chart_type=ct, filter_group=machine,
-                show_by_default=True, order_in_chart_type=1).save()
-            CTFG(
-                chart_type=ct, filter_group=setting,
-                show_by_default=True, order_in_chart_type=2).save()
+            ct.filter_groups.add(machine, setting)
         for ct in [course, lap]:
-            CTFG(
-                chart_type=ct, filter_group=checks,
-                show_by_default=True, order_in_chart_type=3).save()
+            ct.filter_groups.add(checks)
 
         call_command('chart_import')
         call_command(

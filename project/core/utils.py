@@ -66,6 +66,6 @@ def reorder_obj_prep(request, order_field_name, obj, all_objs):
 def delete_ordered_obj_prep(order_field_name, obj, all_objs):
     # Decrement the order of objs coming after this obj.
     obj_order = getattr(obj, order_field_name)
-    affected_ctfgs = all_objs.filter(
+    affected_objs = all_objs.filter(
         **{order_field_name+'__gt': obj_order})
-    affected_ctfgs.update(**{order_field_name: F(order_field_name)-1})
+    affected_objs.update(**{order_field_name: F(order_field_name)-1})

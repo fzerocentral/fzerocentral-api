@@ -1,9 +1,9 @@
-from django.db.models import Min
 from rest_framework.generics import (
     ListCreateAPIView, RetrieveUpdateDestroyAPIView)
 
 from charts.models import Chart
-from chart_types.models import CTFG
+from core.utils import (
+    delete_ordered_obj_prep, insert_ordered_obj_prep, reorder_obj_prep)
 from .models import FilterGroup
 from .serializers import FilterGroupSerializer
 
@@ -12,37 +12,33 @@ class FilterGroupIndex(ListCreateAPIView):
     serializer_class = FilterGroupSerializer
 
     def get_queryset(self):
-        queryset = FilterGroup.objects.all().order_by('name')
+        # It should be most common to get FGs within a particular game, so by
+        # default, we order in a way that makes sense there.
+        queryset = FilterGroup.objects.all().order_by('order_in_game')
 
         game_id = self.request.query_params.get('game_id')
         if game_id is not None:
-            queryset = queryset.filter(ctfg__chart_type__game=game_id)
-
-        # Filter groups of a particular chart type (or equivalently, chart)
+            queryset = queryset.filter(game=game_id)
 
         chart_type_id = self.request.query_params.get('chart_type_id')
-        if chart_type_id == '':
-            # Get orphaned filter groups - not linked to any chart type.
-            queryset = queryset.filter(ctfg=None)
+        if chart_type_id is not None:
+            queryset = queryset.filter(chart_types=chart_type_id)
 
         chart_id = self.request.query_params.get('chart_id')
         if chart_id is not None:
             chart = Chart.objects.get(id=chart_id)
-            chart_type_id = chart.chart_type_id
-
-        if chart_type_id is not None and chart_type_id != '':
-            # Order the filter groups by the order field in the
-            # intermediate model 'CTFG'. The way to do this (while keeping
-            # results as querysets, not lists) is pretty complex:
-            # https://www.petrounias.org/articles/2010/02/06/ordering-on-a-field-in-the-through-model-of-a-recursive-manytomany-relation-in-django/
-            ctfgs = CTFG.objects.filter(chart_type=chart_type_id)
-            queryset = queryset.filter(
-                ctfg__in=ctfgs).annotate(
-                    ctfg_order=Min(
-                        'ctfg__order_in_chart_type')).order_by(
-                            'ctfg_order').distinct()
+            queryset = queryset.filter(chart_types=chart.chart_type_id)
 
         return queryset
+
+    def create(self, request, *args, **kwargs):
+        existing_fgs = FilterGroup.objects.filter(
+            game=request.data['game']['id'])
+        # Prep before insertion.
+        request = insert_ordered_obj_prep(
+            request, 'order_in_game', existing_fgs)
+        # Insert the new FG.
+        return super().create(request, *args, **kwargs)
 
 
 class FilterGroupDetail(RetrieveUpdateDestroyAPIView):
@@ -51,3 +47,20 @@ class FilterGroupDetail(RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return FilterGroup.objects.all()
+
+    def patch(self, request, *args, **kwargs):
+        fg = self.get_object()
+        game_fgs = FilterGroup.objects.filter(game=fg.game)
+        # Prep before reorder (if any).
+        request = reorder_obj_prep(
+            request, 'order_in_game', fg, game_fgs)
+        # Edit FG.
+        return super().patch(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        fg = self.get_object()
+        game_fgs = FilterGroup.objects.filter(game=fg.game)
+        # Prep before delete.
+        delete_ordered_obj_prep('order_in_game', fg, game_fgs)
+        # Delete FG.
+        return super().delete(request, *args, **kwargs)
