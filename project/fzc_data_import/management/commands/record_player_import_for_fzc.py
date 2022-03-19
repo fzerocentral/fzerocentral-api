@@ -25,7 +25,7 @@ class Command(BaseCommand):
     @staticmethod
     def normalize_machine_name(name):
         # Remove spaces and some punctuation.
-        name = re.sub(r'[\s-/_]+', '', name)
+        name = re.sub(r'[\s\-/_]+', '', name)
         # Uppercase to lowercase.
         return name.lower()
 
