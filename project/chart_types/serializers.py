@@ -6,4 +6,11 @@ from .models import ChartType
 class ChartTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChartType
-        exclude = ['date_created', 'date_modified']
+        # Specify the fields explicitly to include m2m (filter_groups).
+        fields = [
+            'id', 'name', 'format_spec', 'order_ascending',
+            'game', 'filter_groups']
+
+    # Serialize format spec as a JSON encoded string, rather than a primitive
+    # data structure.
+    format_spec = serializers.JSONField(binary=True)
