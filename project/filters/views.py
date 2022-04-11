@@ -1,11 +1,10 @@
-import re
-
 from rest_framework.generics import (
     ListCreateAPIView, RetrieveUpdateDestroyAPIView)
 from rest_framework_json_api.views import RelationshipView
 
 from .models import Filter
 from .serializers import FilterSerializer
+from .utils import apply_name_search
 
 
 class FilterIndex(ListCreateAPIView):
@@ -27,13 +26,6 @@ class FilterIndex(ListCreateAPIView):
         if usage_type is not None:
             queryset = queryset.filter(usage_type=usage_type)
 
-        name_search = self.request.query_params.get('name_search')
-        if name_search is not None:
-            # Remove all chars besides letters, numbers, and spaces
-            search_term = re.sub(r'[^\w\s]', '', name_search)
-            # Case-insensitive 'contains this string' test on the filter name
-            queryset = queryset.filter(name__icontains=search_term)
-
         implies_filter_id = self.request.query_params.get('implies_filter_id')
         if implies_filter_id is not None:
             queryset = queryset.filter(
@@ -45,7 +37,15 @@ class FilterIndex(ListCreateAPIView):
             queryset = queryset.filter(
                 incoming_filter_implications=implied_by_filter_id)
 
-        return queryset
+        # From here on, filters may become any iterable besides a queryset.
+        # That's still OK to return from get_queryset() though.
+        filters = queryset
+
+        name_search = self.request.query_params.get('name_search')
+        if name_search is not None:
+            filters = apply_name_search(filters, name_search)
+
+        return filters
 
 
 class FilterDetail(RetrieveUpdateDestroyAPIView):
@@ -57,7 +57,11 @@ class FilterDetail(RetrieveUpdateDestroyAPIView):
 
 
 class FilterRelationships(RelationshipView):
-    # The URL's related_field can only be outgoing_filter_implications.
-    # See https://jsonapi.org/format/#crud-updating-to-many-relationships
+    """
+    This endpoint would work as described here:
+    https://jsonapi.org/format/#crud-updating-to-many-relationships
+    For this model, the only candidate for related_field is
+    outgoing_filter_implications.
+    """
     lookup_url_kwarg = 'filter_id'
     queryset = Filter.objects

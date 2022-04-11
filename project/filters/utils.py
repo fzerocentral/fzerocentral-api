@@ -1,11 +1,12 @@
 import re
 
 from django.db.models import QuerySet
+from django.conf import settings
 
 from .models import Filter
 
 
-def apply_filter_spec(records: QuerySet, filter_spec_str: str):
+def apply_filter_spec(records: QuerySet, filter_spec_str: str) -> QuerySet:
     """
     Filter `records` based on `filter_spec_str`.
 
@@ -63,3 +64,39 @@ def apply_filter_spec(records: QuerySet, filter_spec_str: str):
                     f"Unknown filter type suffix: {type_suffix}")
 
     return records
+
+
+def apply_name_search(
+        queryset: QuerySet, search_arg: str, limit: int = None) -> list:
+
+    if limit is None:
+        limit = settings.REST_FRAMEWORK['PAGE_SIZE']
+
+    # Remove all chars besides letters, numbers, and spaces. Replace such
+    # chars with spaces.
+    cleaned_search_arg = re.sub(r'[^\w\s]', ' ', search_arg)
+    # Parse space-separated search terms.
+    search_terms = cleaned_search_arg.split(' ')
+    # Case-insensitive 'contains this search term' test on the filter name.
+    # Up to 5 terms (to prevent malicious use).
+    for search_term in search_terms[:5]:
+        queryset = queryset.filter(name__icontains=search_term)
+
+    # Take care of ordering. Exact match always comes first (to implement this,
+    # we must convert from queryset to list). Then alphabetical order by name.
+    queryset = queryset.order_by('name')
+    filter_list = list(queryset[:limit])
+    try:
+        exact_match = queryset.get(name__iexact=search_arg)
+    except Filter.DoesNotExist:
+        pass
+    else:
+        # There's an exact match (case insensitive, but respecting punctuation)
+        # so we'll make it the first result.
+        # First remove the result from the list if it's there.
+        filter_list.remove(exact_match)
+        # Then put it at the front.
+        filter_list.insert(0, exact_match)
+        # Chop off one result if needed, to be within the limit.
+        filter_list = filter_list[:limit]
+    return filter_list
