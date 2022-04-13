@@ -42,7 +42,7 @@ class FilterIndex(ListCreateAPIView):
         filters = queryset
 
         name_search = self.request.query_params.get('name_search')
-        if name_search is not None:
+        if name_search is not None and name_search != '':
             filters = apply_name_search(filters, name_search)
 
         return filters

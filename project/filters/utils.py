@@ -85,6 +85,9 @@ def apply_name_search(
     # Take care of ordering. Exact match always comes first (to implement this,
     # we must convert from queryset to list). Then alphabetical order by name.
     queryset = queryset.order_by('name')
+    # It'd be nice to still report the correct total-object-count in the API
+    # response... not sure how to do that when we have a list instead of
+    # queryset though.
     filter_list = list(queryset[:limit])
     try:
         exact_match = queryset.get(name__iexact=search_arg)
