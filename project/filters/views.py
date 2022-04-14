@@ -37,15 +37,11 @@ class FilterIndex(ListCreateAPIView):
             queryset = queryset.filter(
                 incoming_filter_implications=implied_by_filter_id)
 
-        # From here on, filters may become any iterable besides a queryset.
-        # That's still OK to return from get_queryset() though.
-        filters = queryset
-
         name_search = self.request.query_params.get('name_search')
         if name_search is not None and name_search != '':
-            filters = apply_name_search(filters, name_search)
+            queryset = apply_name_search(queryset, name_search)
 
-        return filters
+        return queryset
 
 
 class FilterDetail(RetrieveUpdateDestroyAPIView):

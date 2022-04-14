@@ -1,6 +1,6 @@
 import re
 
-from django.db.models import QuerySet
+from django.db.models import Case, QuerySet, When
 from django.conf import settings
 
 from .models import Filter
@@ -67,7 +67,7 @@ def apply_filter_spec(records: QuerySet, filter_spec_str: str) -> QuerySet:
 
 
 def apply_name_search(
-        queryset: QuerySet, search_arg: str, limit: int = None) -> list:
+        queryset: QuerySet, search_arg: str, limit: int = None) -> QuerySet:
 
     if limit is None:
         limit = settings.REST_FRAMEWORK['PAGE_SIZE']
@@ -82,24 +82,11 @@ def apply_name_search(
     for search_term in search_terms[:5]:
         queryset = queryset.filter(name__icontains=search_term)
 
-    # Take care of ordering. Exact match always comes first (to implement this,
-    # we must convert from queryset to list). Then alphabetical order by name.
-    queryset = queryset.order_by('name')
-    # It'd be nice to still report the correct total-object-count in the API
-    # response... not sure how to do that when we have a list instead of
-    # queryset though.
-    filter_list = list(queryset[:limit])
-    try:
-        exact_match = queryset.get(name__iexact=search_arg)
-    except Filter.DoesNotExist:
-        pass
-    else:
-        # There's an exact match (case insensitive, but respecting punctuation)
-        # so we'll make it the first result.
-        # First remove the result from the list if it's there.
-        filter_list.remove(exact_match)
-        # Then put it at the front.
-        filter_list.insert(0, exact_match)
-        # Chop off one result if needed, to be within the limit.
-        filter_list = filter_list[:limit]
-    return filter_list
+    # Take care of ordering. Exact match always comes first.
+    # Then alphabetical order by name.
+    # https://stackoverflow.com/questions/52047107/order-a-django-queryset-with-specific-objects-first
+    queryset = queryset.order_by(
+        Case(When(name__iexact=search_arg, then=0), default=1),
+        'name',
+    )
+    return queryset
