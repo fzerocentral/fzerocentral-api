@@ -246,7 +246,9 @@ F-Zero GX:
               - name: Top speed
                 type: Top speed
   - name: Story
-    common_chart_type: Clear time
+    common_elements:
+      chart_type: Clear time
+      chart_tag: All (Story)
     child_groups:
       - name: Chapter 1
         charts:

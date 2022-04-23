@@ -47,7 +47,8 @@ F-Zero GX:
         name: 100%
       - group: HSSA
         name: Not used
-    # No tags, meaning no ladder-page subtotals and all charts weighted 1.0
+    chart_tags:
+      All (Story): 1.0
 
   - name: Story Snaking
     kind: MAIN
@@ -57,8 +58,11 @@ F-Zero GX:
         name: 0%
       - group: HSSA
         name: Not used
-    # No tags, meaning no ladder-page subtotals and all charts weighted 1.0
+    chart_tags:
+      All (Story): 1.0
 
   - name: Story Open
     kind: SIDE
     chart_group: Story
+    chart_tags:
+      All (Story): 1.0

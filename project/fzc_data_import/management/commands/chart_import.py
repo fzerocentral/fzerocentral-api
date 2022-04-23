@@ -16,8 +16,13 @@ class Command(BaseCommand):
     
     In charts.yaml, note that a chart can be specified as
     a hash of `name` and `type` (chart type), or as just a `name` string for
-    brevity. If it's just a name string, then `common_chart_type` must be
-    specified by the parent group or an ancestor group.
+    brevity. If it's just a name string, then
+    `common_elements` -> `chart_type` must be specified by the
+    parent group or an ancestor group.
+    
+    Chart tags are derived from either of:
+    - `common_elements` -> `chart_tag`
+    - Chart name
     
     Example usage:
     python manage.py chart_import
@@ -25,9 +30,11 @@ class Command(BaseCommand):
 
     def visit_chart_group(
             self, group_spec, game, parent_group, order,
-            common_chart_type=None):
-        common_chart_type = group_spec.get(
-            'common_chart_type', common_chart_type)
+            parent_common_elements):
+
+        common_elements = parent_common_elements.copy()
+        if 'common_elements' in group_spec:
+            common_elements.update(group_spec['common_elements'])
 
         try:
             chart_group = ChartGroup.objects.get(
@@ -45,7 +52,7 @@ class Command(BaseCommand):
                     group_spec['child_groups'], 1):
                 self.visit_chart_group(
                     child_group, game, chart_group, child_order,
-                    common_chart_type=common_chart_type)
+                    common_elements)
 
         if 'charts' in group_spec:
             for chart_order, chart_spec in enumerate(group_spec['charts'], 1):
@@ -53,19 +60,19 @@ class Command(BaseCommand):
                 if isinstance(chart_spec, str):
                     chart_name = chart_spec
                     chart_type_name = None
-                    spec_chart_tag_names = None
+                    chart_specific_tag_names = None
                 else:
                     chart_name = chart_spec['name']
                     chart_type_name = chart_spec.get('type')
-                    spec_chart_tag_names = chart_spec.get('tags')
+                    chart_specific_tag_names = chart_spec.get('tags')
 
                 if not chart_type_name:
-                    if not common_chart_type:
+                    if 'chart_type' not in common_elements:
                         raise ValueError(
                             f"No chart type specified for chart {chart_name}"
                             f" of group {group_spec['name']}"
                             f" (group id {chart_group.id})")
-                    chart_type_name = common_chart_type
+                    chart_type_name = common_elements['chart_type']
 
                 try:
                     Chart.objects.get(
@@ -81,8 +88,16 @@ class Command(BaseCommand):
                     game=game, name=chart_type_name)
 
                 potential_chart_tag_names = [chart_name]
-                if spec_chart_tag_names:
-                    potential_chart_tag_names.extend(spec_chart_tag_names)
+                if 'chart_tag' in common_elements:
+                    # This only supports one group-wide tag. If a need
+                    # arises later for multiple group-wide tags, then this
+                    # would have to be changed.
+                    potential_chart_tag_names.append(
+                        common_elements['chart_tag'])
+                if chart_specific_tag_names:
+                    potential_chart_tag_names.extend(
+                        chart_specific_tag_names)
+
                 tags = ChartTag.objects.filter(
                     game=game, name__in=potential_chart_tag_names)
 
@@ -104,7 +119,7 @@ class Command(BaseCommand):
         for game_name, game_top_level_groups in charts_data.items():
             game = Game.objects.get(name=game_name)
             for order, group_spec in enumerate(game_top_level_groups, 1):
-                self.visit_chart_group(group_spec, game, None, order)
+                self.visit_chart_group(group_spec, game, None, order, dict())
 
         # Check object counts
 

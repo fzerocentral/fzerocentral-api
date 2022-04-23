@@ -1,12 +1,21 @@
 F-Zero GX:
 
   - name: Course time
-    short_name: Course
+    total_name: Course total
+    primary_chart_type: Course time
   - name: Best lap
-    short_name: Lap
+    total_name: Lap total
+    primary_chart_type: Best lap
   - name: Top speed
-    short_name: Speed
+    total_name: Speed total
+    primary_chart_type: Top speed
 
+  - name: All (Story)
+    total_name: Total time
+    primary_chart_type: Clear time
   - name: Normal
+    primary_chart_type: Clear time
   - name: Hard
+    primary_chart_type: Clear time
   - name: Very Hard
+    primary_chart_type: Clear time

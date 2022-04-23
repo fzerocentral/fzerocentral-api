@@ -81,10 +81,12 @@ class Command(BaseCommand):
 
             for tag_data in game_tags_data:
                 tag_name = tag_data['name']
-                short_name = tag_data.get('short_name')
+                primary_chart_type = ChartType.objects.get(
+                    game=game, name=tag_data['primary_chart_type'])
                 tag = ChartTag(
-                    game=game,
                     name=tag_name,
-                    short_name=short_name,
+                    total_name=tag_data.get('total_name'),
+                    game=game,
+                    primary_chart_type=primary_chart_type,
                 )
                 tag.save()

@@ -130,7 +130,8 @@ class LadderRanking(APIView):
         def chart_count_list():
             return [None] * len(charts)
         charts_data = []
-        players_record_data = defaultdict(chart_count_list)
+        players_record_data: dict[list[dict | None]] = \
+            defaultdict(chart_count_list)
 
         for chart_index, chart in enumerate(charts):
 
@@ -186,25 +187,11 @@ class LadderRanking(APIView):
 
         chart_weight_total = sum([cd['weight'] for cd in charts_data])
 
-        chart_tags_data = dict()
+        chart_tags_lookup = dict()
         for lc_tag in ladder_chart_tags:
             tag_id = lc_tag.chart_tag_id
             tag = lc_tag.chart_tag
-
-            # The total's format spec is the format spec of any chart
-            # using this tag.
-            # TODO: This is somewhat hacky; since totals are
-            #  associated with ChartTags, and format specs are
-            #  associated with ChartTypes, there's no guarantee that
-            #  all charts of a particular tag have the same format
-            #  spec. Might want to rethink the DB structure here.
-            format_spec = tag.charts.first().chart_type.format_spec
-
-            chart_tags_data[tag_id] = dict(
-                tag=tag,
-                total_name=f"{tag.short_name} total",
-                total_format_spec=format_spec,
-            )
+            chart_tags_lookup[tag_id] = tag
 
         entries = []
 
@@ -272,7 +259,6 @@ class LadderRanking(APIView):
             )
 
             # Totals
-            # TODO: Add an overall total if there are no tags
 
             record_values_by_tag = defaultdict(list)
             order_ascending_by_tag = dict()
@@ -302,12 +288,13 @@ class LadderRanking(APIView):
                     total = sum(record_values)
 
                 # Format the total.
-                format_spec = chart_tags_data[tag_id]['total_format_spec']
+                tag = chart_tags_lookup[tag_id]
+                format_spec = tag.primary_chart_type.format_spec
                 if total is None:
                     total_value = None
                 else:
                     total_value = apply_format_spec(format_spec, total)
-                total_name = chart_tags_data[tag_id]['total_name']
+                total_name = tag.total_name
 
                 entry['totals'].append(dict(
                     name=total_name, value=total_value))
