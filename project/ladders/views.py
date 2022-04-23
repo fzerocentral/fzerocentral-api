@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from chart_groups.utils import get_charts_in_hierarchy
+from chart_types.utils import apply_format_spec
 from core.utils import (
     add_ranks,
     delete_ordered_obj_prep,
@@ -185,6 +186,26 @@ class LadderRanking(APIView):
 
         chart_weight_total = sum([cd['weight'] for cd in charts_data])
 
+        chart_tags_data = dict()
+        for lc_tag in ladder_chart_tags:
+            tag_id = lc_tag.chart_tag_id
+            tag = lc_tag.chart_tag
+
+            # The total's format spec is the format spec of any chart
+            # using this tag.
+            # TODO: This is somewhat hacky; since totals are
+            #  associated with ChartTags, and format specs are
+            #  associated with ChartTypes, there's no guarantee that
+            #  all charts of a particular tag have the same format
+            #  spec. Might want to rethink the DB structure here.
+            format_spec = tag.charts.first().chart_type.format_spec
+
+            chart_tags_data[tag_id] = dict(
+                tag=tag,
+                total_name=f"{tag.short_name} total",
+                total_format_spec=format_spec,
+            )
+
         entries = []
 
         for player_id in player_ids:
@@ -202,8 +223,9 @@ class LadderRanking(APIView):
                     rank = charts_record_data[ci]['rank']
                 weighted_ranks.append(charts_data[ci]['weight'] * rank)
 
-            # To 3 decimal places, like 4.567
-            af = round(sum(weighted_ranks) / chart_weight_total, 3)
+            # To 3 decimal places, like 4.560
+            af = sum(weighted_ranks) / chart_weight_total
+            af_display = format(af, '.3f')
 
             # SRPR
 
@@ -224,15 +246,29 @@ class LadderRanking(APIView):
                             / Decimal(sr_value))
                 weighted_srprs.append(charts_data[ci]['weight'] * chart_srpr)
 
-            # To 5 decimal places, like 0.93456 (= 93.456%)
-            srpr = round(sum(weighted_srprs) / Decimal(chart_weight_total), 5)
+            # Multiplying by 100 makes it a percentage:
+            # 0.934497 -> 93.4497%
+            srpr = (
+                Decimal(100)
+                * sum(weighted_srprs)
+                / Decimal(chart_weight_total)
+            )
+            # To 3 decimal places, like 93.450%
+            srpr_display = f"{srpr:.3f}%"
+
+            last_active = players_data[player_id]['last_active']
+            last_active_display = last_active.date().isoformat()
 
             entry = dict(
                 player_id=player_id,
                 player_username=players_data[player_id]['username'],
                 af=af,
+                af_display=af_display,
                 srpr=srpr,
-                last_active=players_data[player_id]['last_active'],
+                srpr_display=srpr_display,
+                last_active=last_active,
+                last_active_display=last_active_display,
+                totals=[],
             )
 
             # Totals
@@ -265,7 +301,16 @@ class LadderRanking(APIView):
                     # Sum up.
                     total = sum(record_values)
 
-                entry[f'total_{tag_id}'] = total
+                # Format the total.
+                format_spec = chart_tags_data[tag_id]['total_format_spec']
+                if total is None:
+                    total_value = None
+                else:
+                    total_value = apply_format_spec(format_spec, total)
+                total_name = chart_tags_data[tag_id]['total_name']
+
+                entry['totals'].append(dict(
+                    name=total_name, value=total_value))
 
             entries.append(entry)
 

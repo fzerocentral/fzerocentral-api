@@ -1,49 +1,22 @@
-from typing import Dict, List
-
 from django.db.models import QuerySet
 
+from chart_types.utils import apply_format_spec
 from charts.models import Chart
 from core.utils import add_ranks
 
 
-def add_record_displays(records: List[Dict], format_spec: List[Dict]):
+def add_record_displays(records: list[dict], format_spec: list[dict]):
     """
     Add value_display attribute to each record in `records`.
     This attribute is the human-readable string of the record value,
     such as 1'23"456 instead of 123456.
     """
     for record in records:
-        # Order of the hashes determines both rank (importance of this
-        # number relative to the others) AND position-order in the string.
-        # Can't think of any examples where those would need to be different.
-        #
-        # Since format_spec is loaded from JSON, the hash keys are strings like
-        # 'multiplier', not colon identifiers like :multiplier.
-        total_multiplier = 1
-        for spec_item in reversed(format_spec):
-            total_multiplier = total_multiplier * spec_item.get(
-                'multiplier', 1)
-            spec_item['total_multiplier'] = total_multiplier
-
-        remaining_value = record['value']
-        value_display = ""
-
-        for spec_item in format_spec:
-            item_value = remaining_value / spec_item['total_multiplier']
-            remaining_value = remaining_value % spec_item['total_multiplier']
-
-            number_format = '%'
-            if 'digits' in spec_item:
-                number_format += '0' + str(spec_item['digits'])
-            number_format += 'd'
-
-            value_display += \
-                (number_format % item_value) + spec_item.get('suffix', '')
-
-        record['value_display'] = value_display
+        record['value_display'] = apply_format_spec(
+            format_spec, record['value'])
 
 
-def make_record_ranking(records: List[Dict]) -> List[Dict]:
+def make_record_ranking(records: list[dict]) -> list[dict]:
     """
     Include only the first record for each player (given that they've
     already been sorted best-first), and add rank numbers, accounting
