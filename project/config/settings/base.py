@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 
     'charts',
     'chart_groups',
+    'chart_tags',
     'chart_types',
     'filters',
     'filter_groups',

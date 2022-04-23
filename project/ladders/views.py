@@ -1,9 +1,23 @@
+from collections import defaultdict
+from decimal import Decimal
+from operator import itemgetter
+
 from rest_framework.generics import (
     ListCreateAPIView, RetrieveUpdateDestroyAPIView)
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
+from chart_groups.utils import get_charts_in_hierarchy
 from core.utils import (
-    delete_ordered_obj_prep, insert_ordered_obj_prep, reorder_obj_prep)
-from .models import Ladder
+    add_ranks,
+    delete_ordered_obj_prep,
+    insert_ordered_obj_prep,
+    reorder_obj_prep)
+from filters.utils import apply_filter_spec
+from players.models import Player
+from records.models import Record
+from records.utils import make_record_ranking, sort_records_by_value
+from .models import Ladder, LadderChartTag
 from .serializers import LadderSerializer
 
 
@@ -58,3 +72,179 @@ class LadderDetail(RetrieveUpdateDestroyAPIView):
         delete_ordered_obj_prep('order_in_game_and_kind', ladder, gk_ladders)
         # Delete ladder.
         return super().delete(request, *args, **kwargs)
+
+
+class LadderRanking(APIView):
+
+    def get(self, request, ladder_id):
+        ladder = Ladder.objects.get(id=ladder_id)
+        filter_spec = ladder.filter_spec
+        charts = get_charts_in_hierarchy(ladder.chart_group)
+        ladder_chart_tags = list(LadderChartTag.objects.filter(ladder=ladder))
+
+        # Find all the players in the ladder
+
+        all_records = Record.objects.filter(chart__in=charts)
+
+        if filter_spec != '':
+            all_records = apply_filter_spec(all_records, filter_spec)
+
+        player_ids = all_records.values_list('player_id', flat=True).distinct()
+
+        # Add more player info
+
+        players = Player.objects.filter(id__in=player_ids).values(
+            'id', 'username')
+        players_data = {p['id']: dict(username=p['username']) for p in players}
+
+        for r in all_records.order_by('player_id', '-date_achieved') \
+                .distinct('player_id') \
+                .values('player_id', 'date_achieved'):
+            players_data[r['player_id']]['last_active'] = r['date_achieved']
+
+        def chart_count_list():
+            return [None] * len(charts)
+        charts_data = []
+        players_record_data = defaultdict(chart_count_list)
+
+        for chart_index, chart in enumerate(charts):
+
+            records = Record.objects.filter(chart=chart)
+            chart_tags = list(chart.chart_tags.all())
+
+            # Tags applying to this chart for this ladder.
+            applicable_tag_ids = (
+                set([tag.id for tag in chart_tags])
+                & set([lc_tag.chart_tag_id for lc_tag in ladder_chart_tags])
+            )
+
+            if not ladder_chart_tags:
+                # No ladder formula; all charts are weighted 1.
+                chart_weight = 1
+            elif not applicable_tag_ids:
+                # Chart is not counted in the ladder formula.
+                chart_weight = 0
+            else:
+                # Chart is counted in the ladder formula. Check all the
+                # applicable chart tags; lowest weight wins.
+                chart_weight = min([
+                    lc_tag.weight for lc_tag in ladder_chart_tags
+                    if lc_tag.chart_tag_id in applicable_tag_ids])
+
+            if filter_spec != '':
+                records = apply_filter_spec(records, filter_spec)
+
+            # Sort records best-first.
+            records = sort_records_by_value(records, chart.id)
+
+            records = records.values(
+                'id', 'value', 'date_achieved', 'player_id')
+
+            records = make_record_ranking(records)
+            record_count = len(records)
+            sr_value = records[0]['value']
+
+            charts_data.append(dict(
+                tag_ids=applicable_tag_ids,
+                weight=chart_weight,
+                record_count=record_count,
+                sr_value=sr_value,
+                order_ascending=chart.chart_type.order_ascending,
+            ))
+
+            for r in records:
+                players_record_data[r['player_id']][chart_index] = dict(
+                    rank=r['rank'],
+                    value=r['value'],
+                )
+
+        chart_weight_total = sum([cd['weight'] for cd in charts_data])
+
+        entries = []
+
+        for player_id in player_ids:
+
+            charts_record_data = players_record_data[player_id]
+
+            # AF
+
+            weighted_ranks = []
+            for ci in range(len(charts)):
+                if charts_record_data[ci] is None:
+                    # No record for this chart: Use last rank + 1
+                    rank = charts_data[ci]['record_count'] + 1
+                else:
+                    rank = charts_record_data[ci]['rank']
+                weighted_ranks.append(charts_data[ci]['weight'] * rank)
+
+            # To 3 decimal places, like 4.567
+            af = round(sum(weighted_ranks) / chart_weight_total, 3)
+
+            # SRPR
+
+            weighted_srprs = []
+            for ci in range(len(charts)):
+                if charts_record_data[ci] is None:
+                    # No record for this chart: Use 0
+                    chart_srpr = 0
+                else:
+                    sr_value = charts_data[ci]['sr_value']
+                    if charts_data[ci]['order_ascending']:
+                        chart_srpr = (
+                            Decimal(sr_value)
+                            / Decimal(charts_record_data[ci]['value']))
+                    else:
+                        chart_srpr = (
+                            Decimal(charts_record_data[ci]['value'])
+                            / Decimal(sr_value))
+                weighted_srprs.append(charts_data[ci]['weight'] * chart_srpr)
+
+            # To 5 decimal places, like 0.93456 (= 93.456%)
+            srpr = round(sum(weighted_srprs) / Decimal(chart_weight_total), 5)
+
+            entry = dict(
+                player_id=player_id,
+                player_username=players_data[player_id]['username'],
+                af=af,
+                srpr=srpr,
+                last_active=players_data[player_id]['last_active'],
+            )
+
+            # Totals
+            # TODO: Add an overall total if there are no tags
+
+            record_values_by_tag = defaultdict(list)
+            order_ascending_by_tag = dict()
+            for ci in range(len(charts)):
+                for tag_id in charts_data[ci]['tag_ids']:
+                    if charts_record_data[ci] is None:
+                        value = None
+                    else:
+                        value = charts_record_data[ci]['value']
+                    record_values_by_tag[tag_id].append(value)
+                    order_ascending_by_tag[tag_id] = \
+                        charts_data[ci]['order_ascending']
+
+            for tag_id, record_values in record_values_by_tag.items():
+
+                if None in record_values:
+                    if order_ascending_by_tag[tag_id]:
+                        # Blank record invalidates the total.
+                        total = None
+                    else:
+                        # Filter out the blank records and sum up the rest.
+                        def not_none(r):
+                            return r is not None
+                        total = sum(filter(not_none, record_values))
+                else:
+                    # Sum up.
+                    total = sum(record_values)
+
+                entry[f'total_{tag_id}'] = total
+
+            entries.append(entry)
+
+        entries.sort(key=itemgetter('af'))
+        add_ranks(entries, 'af')
+
+        return Response(entries)

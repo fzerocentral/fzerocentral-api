@@ -6,247 +6,247 @@ F-Zero GX:
           - name: "Mute City: Twist Road"
             show_charts_together: True
             charts:
-              - name: Course Time
-                type: Course Time
-              - name: Lap Time
-                type: Lap Time
-              - name: Speed
-                type: Speed
+              - name: Course time
+                type: Course time
+              - name: Best lap
+                type: Best lap
+              - name: Top speed
+                type: Top speed
           - name: "Casino Palace: Split Oval"
             show_charts_together: True
             charts:
-              - name: Course Time
-                type: Course Time
-              - name: Lap Time
-                type: Lap Time
-              - name: Speed
-                type: Speed
+              - name: Course time
+                type: Course time
+              - name: Best lap
+                type: Best lap
+              - name: Top speed
+                type: Top speed
           - name: "Sand Ocean: Surface Slide"
             show_charts_together: True
             charts:
-              - name: Course Time
-                type: Course Time
-              - name: Lap Time
-                type: Lap Time
-              - name: Speed
-                type: Speed
+              - name: Course time
+                type: Course time
+              - name: Best lap
+                type: Best lap
+              - name: Top speed
+                type: Top speed
           - name: "Lightning: Loop Cross"
             show_charts_together: True
             charts:
-              - name: Course Time
-                type: Course Time
-              - name: Lap Time
-                type: Lap Time
-              - name: Speed
-                type: Speed
+              - name: Course time
+                type: Course time
+              - name: Best lap
+                type: Best lap
+              - name: Top speed
+                type: Top speed
           - name: "Aeropolis: Multiplex"
             show_charts_together: True
             charts:
-              - name: Course Time
-                type: Course Time
-              - name: Lap Time
-                type: Lap Time
-              - name: Speed
-                type: Speed
+              - name: Course time
+                type: Course time
+              - name: Best lap
+                type: Best lap
+              - name: Top speed
+                type: Top speed
       - name: Sapphire Cup
         child_groups:
           - name: "Big Blue: Drift Highway"
             show_charts_together: True
             charts:
-              - name: Course Time
-                type: Course Time
-              - name: Lap Time
-                type: Lap Time
-              - name: Speed
-                type: Speed
+              - name: Course time
+                type: Course time
+              - name: Best lap
+                type: Best lap
+              - name: Top speed
+                type: Top speed
           - name: "Port Town: Aero Dive"
             show_charts_together: True
             charts:
-              - name: Course Time
-                type: Course Time
-              - name: Lap Time
-                type: Lap Time
-              - name: Speed
-                type: Speed
+              - name: Course time
+                type: Course time
+              - name: Best lap
+                type: Best lap
+              - name: Top speed
+                type: Top speed
           - name: "Green Plant: Mobius Ring"
             show_charts_together: True
             charts:
-              - name: Course Time
-                type: Course Time
-              - name: Lap Time
-                type: Lap Time
-              - name: Speed
-                type: Speed
+              - name: Course time
+                type: Course time
+              - name: Best lap
+                type: Best lap
+              - name: Top speed
+                type: Top speed
           - name: "Port Town: Long Pipe"
             show_charts_together: True
             charts:
-              - name: Course Time
-                type: Course Time
-              - name: Lap Time
-                type: Lap Time
-              - name: Speed
-                type: Speed
+              - name: Course time
+                type: Course time
+              - name: Best lap
+                type: Best lap
+              - name: Top speed
+                type: Top speed
           - name: "Mute City: Serial Gaps"
             show_charts_together: True
             charts:
-              - name: Course Time
-                type: Course Time
-              - name: Lap Time
-                type: Lap Time
-              - name: Speed
-                type: Speed
+              - name: Course time
+                type: Course time
+              - name: Best lap
+                type: Best lap
+              - name: Top speed
+                type: Top speed
       - name: Emerald Cup
         child_groups:
           - name: "Fire Field: Cylinder Knot"
             show_charts_together: True
             charts:
-              - name: Course Time
-                type: Course Time
-              - name: Lap Time
-                type: Lap Time
-              - name: Speed
-                type: Speed
+              - name: Course time
+                type: Course time
+              - name: Best lap
+                type: Best lap
+              - name: Top speed
+                type: Top speed
           - name: "Green Plant: Intersection"
             show_charts_together: True
             charts:
-              - name: Course Time
-                type: Course Time
-              - name: Lap Time
-                type: Lap Time
-              - name: Speed
-                type: Speed
+              - name: Course time
+                type: Course time
+              - name: Best lap
+                type: Best lap
+              - name: Top speed
+                type: Top speed
           - name: "Casino Palace: Double Branches"
             show_charts_together: True
             charts:
-              - name: Course Time
-                type: Course Time
-              - name: Lap Time
-                type: Lap Time
-              - name: Speed
-                type: Speed
+              - name: Course time
+                type: Course time
+              - name: Best lap
+                type: Best lap
+              - name: Top speed
+                type: Top speed
           - name: "Lightning: Half Pipe"
             show_charts_together: True
             charts:
-              - name: Course Time
-                type: Course Time
-              - name: Lap Time
-                type: Lap Time
-              - name: Speed
-                type: Speed
+              - name: Course time
+                type: Course time
+              - name: Best lap
+                type: Best lap
+              - name: Top speed
+                type: Top speed
           - name: "Big Blue: Ordeal"
             show_charts_together: True
             charts:
-              - name: Course Time
-                type: Course Time
-              - name: Lap Time
-                type: Lap Time
-              - name: Speed
-                type: Speed
+              - name: Course time
+                type: Course time
+              - name: Best lap
+                type: Best lap
+              - name: Top speed
+                type: Top speed
       - name: Diamond Cup
         child_groups:
           - name: "Cosmo Terminal: Trident"
             show_charts_together: True
             charts:
-              - name: Course Time
-                type: Course Time
-              - name: Lap Time
-                type: Lap Time
-              - name: Speed
-                type: Speed
+              - name: Course time
+                type: Course time
+              - name: Best lap
+                type: Best lap
+              - name: Top speed
+                type: Top speed
           - name: "Sand Ocean: Lateral Shift"
             show_charts_together: True
             charts:
-              - name: Course Time
-                type: Course Time
-              - name: Lap Time
-                type: Lap Time
-              - name: Speed
-                type: Speed
+              - name: Course time
+                type: Course time
+              - name: Best lap
+                type: Best lap
+              - name: Top speed
+                type: Top speed
           - name: "Fire Field: Undulation"
             show_charts_together: True
             charts:
-              - name: Course Time
-                type: Course Time
-              - name: Lap Time
-                type: Lap Time
-              - name: Speed
-                type: Speed
+              - name: Course time
+                type: Course time
+              - name: Best lap
+                type: Best lap
+              - name: Top speed
+                type: Top speed
           - name: "Aeropolis: Dragon Slope"
             show_charts_together: True
             charts:
-              - name: Course Time
-                type: Course Time
-              - name: Lap Time
-                type: Lap Time
-              - name: Speed
-                type: Speed
+              - name: Course time
+                type: Course time
+              - name: Best lap
+                type: Best lap
+              - name: Top speed
+                type: Top speed
           - name: "Phantom Road: Slim-Line Slits"
             show_charts_together: True
             charts:
-              - name: Course Time
-                type: Course Time
-              - name: Lap Time
-                type: Lap Time
-              - name: Speed
-                type: Speed
+              - name: Course time
+                type: Course time
+              - name: Best lap
+                type: Best lap
+              - name: Top speed
+                type: Top speed
       - name: AX Cup
         child_groups:
           - name: "Aeropolis: Screw Drive"
             show_charts_together: True
             charts:
-              - name: Course Time
-                type: Course Time
-              - name: Lap Time
-                type: Lap Time
-              - name: Speed
-                type: Speed
+              - name: Course time
+                type: Course time
+              - name: Best lap
+                type: Best lap
+              - name: Top speed
+                type: Top speed
           - name: "Outer Space: Meteor Stream"
             show_charts_together: True
             charts:
-              - name: Course Time
-                type: Course Time
-              - name: Lap Time
-                type: Lap Time
-              - name: Speed
-                type: Speed
+              - name: Course time
+                type: Course time
+              - name: Best lap
+                type: Best lap
+              - name: Top speed
+                type: Top speed
           - name: "Port Town: Cylinder Wave"
             show_charts_together: True
             charts:
-              - name: Course Time
-                type: Course Time
-              - name: Lap Time
-                type: Lap Time
-              - name: Speed
-                type: Speed
+              - name: Course time
+                type: Course time
+              - name: Best lap
+                type: Best lap
+              - name: Top speed
+                type: Top speed
           - name: "Lightning: Thunder Road"
             show_charts_together: True
             charts:
-              - name: Course Time
-                type: Course Time
-              - name: Lap Time
-                type: Lap Time
-              - name: Speed
-                type: Speed
+              - name: Course time
+                type: Course time
+              - name: Best lap
+                type: Best lap
+              - name: Top speed
+                type: Top speed
           - name: "Green Plant: Spiral"
             show_charts_together: True
             charts:
-              - name: Course Time
-                type: Course Time
-              - name: Lap Time
-                type: Lap Time
-              - name: Speed
-                type: Speed
+              - name: Course time
+                type: Course time
+              - name: Best lap
+                type: Best lap
+              - name: Top speed
+                type: Top speed
           - name: "Mute City: Sonic Oval"
             show_charts_together: True
             charts:
-              - name: Course Time
-                type: Course Time
-              - name: Lap Time
-                type: Lap Time
-              - name: Speed
-                type: Speed
+              - name: Course time
+                type: Course time
+              - name: Best lap
+                type: Best lap
+              - name: Top speed
+                type: Top speed
   - name: Story
-    common_chart_type: Course Time
+    common_chart_type: Clear time
     child_groups:
       - name: Chapter 1
         charts:

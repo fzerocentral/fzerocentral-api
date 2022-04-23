@@ -1,0 +1,12 @@
+F-Zero GX:
+
+  - name: Course time
+    short_name: Course
+  - name: Best lap
+    short_name: Lap
+  - name: Top speed
+    short_name: Speed
+
+  - name: Normal
+  - name: Hard
+  - name: Very Hard

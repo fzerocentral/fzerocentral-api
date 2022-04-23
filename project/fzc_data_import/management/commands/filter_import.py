@@ -2,11 +2,9 @@ import csv
 
 from django.core.management.base import BaseCommand
 from django.db.models import Count
-from tqdm import tqdm
 
 from filters.models import Filter
 from games.models import Game
-from chart_types.models import ChartType
 
 
 class Command(BaseCommand):
@@ -20,11 +18,6 @@ class Command(BaseCommand):
     CSV format:
     First row:
     - Game name
-    - Name of a chart type that uses the filter group of interest.
-      This is used to disambiguate between filter groups of the same name in the
-      same game; for example, vehicle choices may be different between different
-      game modes, thus necessitating a different 'Vehicle' filter group for each
-      mode.
     - Filter group name
     Subsequent rows:
     - Filter name goes in the first column
@@ -63,80 +56,81 @@ class Command(BaseCommand):
 
         # Get filter group details, and establish which filters are implied
         # rather than choosable.
+        filter_names = []
+        implication_names_by_filter = dict()
         all_implied_names = set()
         with open(options['csvfile'], 'r') as csvfile:
             reader = csv.reader(csvfile)
 
             # First row
-            game_name, name_of_ct_with_fg, filter_group_name = next(reader)
+            game_name, filter_group_name = next(reader)
 
             # Second row onward
             for row in reader:
-                direct_outgoing_names = row[1:]
-                all_implied_names.update(direct_outgoing_names)
+                filter_name = row[0]
+                filter_names.append(filter_name)
+                directly_implied_names = row[1:]
+
+                # Direct implications
+                implication_names = set(directly_implied_names)
+                # Indirect implications
+                for directly_implied_name in directly_implied_names:
+                    # Add indirects out of this particular direct implication
+                    implication_names |= implication_names_by_filter[
+                        directly_implied_name]
+
+                implication_names_by_filter[filter_name] = implication_names
+
+                all_implied_names.update(directly_implied_names)
 
         game = Game.objects.get(name=game_name)
-        ct_with_fg = ChartType.objects.get(game=game, name=name_of_ct_with_fg)
-        filter_group = ct_with_fg.filter_groups.get(name=filter_group_name)
+        filter_group = game.filtergroup_set.get(name=filter_group_name)
 
-        existing_filters = filter_group.filter_set.all()
-        self.stdout.write(f"Existing filters: {existing_filters.count()}")
+        existing_filter_names = set(
+            filter_group.filter_set.values_list('name', flat=True))
+        self.stdout.write(f"Existing filters: {len(existing_filter_names)}")
 
         # It's just easier to delete all existing implications, and then
-        # subsequently add them all from scratch.
-        for filter in existing_filters:
-            filter.outgoing_filter_implications.clear()
+        # subsequently add them all from scratch. Here we delete them.
+        ThroughModel = Filter.outgoing_filter_implications.through
+        ThroughModel.objects.filter(
+            from_filter__filter_group=filter_group).delete()
 
-        all_outgoing = dict()
+        # Set up filters to create if they don't exist in the DB yet.
+        filters = []
+        for filter_name in filter_names:
 
-        # Create filters that don't exist in the DB yet, and add implications.
-        with open(options['csvfile'], 'r') as csvfile:
-            reader = csv.reader(csvfile)
+            if filter_name in existing_filter_names:
+                continue
 
-            # Discard the first row, we don't need it now.
-            next(reader)
+            if filter_name in all_implied_names:
+                usage_type = Filter.UsageTypes.IMPLIED.value
+            else:
+                usage_type = Filter.UsageTypes.CHOOSABLE.value
+            filters.append(Filter(
+                name=filter_name,
+                filter_group=filter_group,
+                usage_type=usage_type,
+            ))
+        # Bulk-create filters.
+        created_filters = Filter.objects.bulk_create(filters)
 
-            # Iterate over filters.
-            for row in tqdm(reader):
-                filter_name = row[0]
-                direct_outgoing_names = row[1:]
+        created_filters_by_name = {f.name: f for f in created_filters}
 
-                try:
-                    filter = filter_group.filter_set.get(name=filter_name)
-                except Filter.DoesNotExist:
-                    # Create filter
-                    if filter_name in all_implied_names:
-                        usage_type = Filter.UsageTypes.IMPLIED.value
-                    else:
-                        usage_type = Filter.UsageTypes.CHOOSABLE.value
-                    filter = Filter(
-                        name=filter_name, filter_group=filter_group,
-                        usage_type=usage_type)
-                    filter.save()
+        # Set up implications to create.
+        implications = []
+        for filter_name in filter_names:
+            f = created_filters_by_name[filter_name]
+            for implication_name in implication_names_by_filter[filter_name]:
+                f2 = created_filters_by_name[implication_name]
+                implications.append(ThroughModel(
+                    from_filter=f,
+                    to_filter=f2,
+                ))
+        # Bulk-create implications.
+        ThroughModel.objects.bulk_create(implications)
 
-                # Determine effective implications based on the direct
-                # implications.
-                all_outgoing_names = set()
-                for direct_outgoing_name in direct_outgoing_names:
-                    # Direct
-                    all_outgoing_names.add(
-                        direct_outgoing_name)
-                    # Indirect
-                    all_outgoing_names.update(
-                        all_outgoing[direct_outgoing_name])
-
-                # If this filter is implied by other filters, save those
-                # implications for lookup later.
-                if filter_name in all_implied_names:
-                    all_outgoing[filter_name] = all_outgoing_names
-
-                # Insert effective implications.
-                for outgoing_name in all_outgoing_names:
-                    implied_filter = Filter.objects.get(
-                        filter_group=filter_group, name=outgoing_name)
-                    filter.outgoing_filter_implications.add(implied_filter)
-
-        # Print counts as sanity checks
+        # Print counts as sanity checks.
 
         filters = filter_group.filter_set.all()
         implication_count = filters.aggregate(

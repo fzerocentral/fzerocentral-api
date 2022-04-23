@@ -3,6 +3,7 @@ import yaml
 
 from charts.models import Chart
 from chart_groups.models import ChartGroup
+from chart_tags.models import ChartTag
 from chart_types.models import ChartType
 from games.models import Game
 
@@ -52,9 +53,12 @@ class Command(BaseCommand):
                 if isinstance(chart_spec, str):
                     chart_name = chart_spec
                     chart_type_name = None
+                    spec_chart_tag_names = None
                 else:
                     chart_name = chart_spec['name']
                     chart_type_name = chart_spec.get('type')
+                    spec_chart_tag_names = chart_spec.get('tags')
+
                 if not chart_type_name:
                     if not common_chart_type:
                         raise ValueError(
@@ -63,18 +67,35 @@ class Command(BaseCommand):
                             f" (group id {chart_group.id})")
                     chart_type_name = common_chart_type
 
-                chart_type = ChartType.objects.get(
-                    game=game, name=chart_type_name)
                 try:
                     Chart.objects.get(
                         chart_group=chart_group, name=chart_name)
+                    # Chart already exists.
+                    continue
                 except Chart.DoesNotExist:
-                    chart = Chart(
-                        chart_group=chart_group, name=chart_name,
-                        order_in_group=chart_order, chart_type=chart_type)
-                    chart.save()
+                    pass
+
+                # Create chart.
+
+                chart_type = ChartType.objects.get(
+                    game=game, name=chart_type_name)
+
+                potential_chart_tag_names = [chart_name]
+                if spec_chart_tag_names:
+                    potential_chart_tag_names.extend(spec_chart_tag_names)
+                tags = ChartTag.objects.filter(
+                    game=game, name__in=potential_chart_tag_names)
+
+                chart = Chart(
+                    chart_group=chart_group, name=chart_name,
+                    order_in_group=chart_order, chart_type=chart_type,
+                )
+                chart.save()
+                chart.chart_tags.set(tags)
+                chart.save()
 
     def handle(self, *args, **options):
+
         # Load chart data
         with open('fzc_data_import/data/charts.yaml', 'r') as yaml_file:
             charts_data = yaml.full_load(yaml_file)

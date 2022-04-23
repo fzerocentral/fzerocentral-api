@@ -1,4 +1,37 @@
-from django.db.models import F
+from django.db.models import F, QuerySet
+
+from rest_framework.request import Request
+
+
+# QUERY PARAMETER RELATED
+
+
+def filter_queryset_by_param(
+        request: Request, request_param_name: str,
+        queryset: QuerySet, queryset_param_name: str) -> QuerySet:
+    """
+    Filter the queryset by the specified request param. If the request does
+    not have the param, leave the queryset unchanged.
+    """
+    param_value = request.query_params.get(request_param_name)
+    if param_value is not None:
+        queryset = queryset.filter(**{queryset_param_name: param_value})
+    return queryset
+
+
+def require_one_of_params(request: Request, *param_names: str):
+    """
+    If the request does not have any one of the specified query param names,
+    raise an error.
+    """
+    for param_name in param_names:
+        if request.query_params.get(param_name) is not None:
+            return
+    raise ValueError(
+        f"Must specify one of the following params: {', '.join(param_names)}")
+
+
+# RELATED TO MODELS WITH ORDERINGS
 
 
 def insert_ordered_obj_prep(request, order_field_name, existing_objs):
@@ -69,3 +102,25 @@ def delete_ordered_obj_prep(order_field_name, obj, all_objs):
     affected_objs = all_objs.filter(
         **{order_field_name+'__gt': obj_order})
     affected_objs.update(**{order_field_name: F(order_field_name)-1})
+
+
+# RANKINGS
+
+
+def add_ranks(entries: list[dict], key: str) -> None:
+    """
+    Add rank numbers to the entries, which should already be sorted by key.
+    Account for tied values.
+    """
+    current_rank = 0
+    previous_entry_count = 0
+    previous_value = None
+
+    for entry in entries:
+        if entry[key] != previous_value:
+            # Not a tie with the previous entry.
+            current_rank = previous_entry_count + 1
+        entry['rank'] = current_rank
+
+        previous_entry_count += 1
+        previous_value = entry[key]

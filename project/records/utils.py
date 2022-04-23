@@ -3,6 +3,7 @@ from typing import Dict, List
 from django.db.models import QuerySet
 
 from charts.models import Chart
+from core.utils import add_ranks
 
 
 def add_record_displays(records: List[Dict], format_spec: List[Dict]):
@@ -49,10 +50,7 @@ def make_record_ranking(records: List[Dict]) -> List[Dict]:
     for tied values.
     """
     seen_players = set()
-    current_rank = 0
-    previous_record_count = 0
-    previous_value = None
-    ranked_records = []
+    record_ranking = []
 
     for record in records:
         # Get only the first record for each player.
@@ -60,22 +58,18 @@ def make_record_ranking(records: List[Dict]) -> List[Dict]:
         # doesn't seem to get the job done, since "the fields in order_by()
         # must start with the fields in distinct(), in the same order."
         # https://docs.djangoproject.com/en/dev/ref/models/querysets/#distinct
-        if record['player_username'] in seen_players:
+        # TODO: Re-evaluate this. Not the end of the world if we have to sort
+        #  players manually.
+        if record['player_id'] in seen_players:
             # Not the first record from this player. Ignore.
             continue
 
-        if record['value'] != previous_value:
-            # Not a tie with the previous record.
-            current_rank = previous_record_count + 1
-        record['rank'] = current_rank
+        record_ranking.append(record)
+        seen_players.add(record['player_id'])
 
-        ranked_records.append(record)
+    add_ranks(record_ranking, 'value')
 
-        previous_record_count += 1
-        previous_value = record['value']
-        seen_players.add(record['player_username'])
-
-    return ranked_records
+    return record_ranking
 
 
 def sort_records_by_value(records: QuerySet, chart_id: int) -> QuerySet:

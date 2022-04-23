@@ -8,6 +8,8 @@ import MySQLdb
 from tqdm import tqdm
 import yaml
 
+from chart_groups.models import ChartGroup
+from charts.models import Chart
 from filter_groups.models import FilterGroup
 from games.models import Game
 from players.models import Player
@@ -60,6 +62,47 @@ class Command(BaseCommand):
             type=str,
             help="MySQL user to authenticate as")
 
+    def visit_chart_group(self, cg, cg_spec, php_ladder_id, game, ladder_spec):
+
+        for name, content in cg_spec.items():
+            if isinstance(content, str):
+                cup_id, course_id = content.split('-')
+                cup_id = int(cup_id)
+                course_id = int(course_id)
+
+                if 'record_type' in ladder_spec:
+                    # Only one recognized record type, so the name will be
+                    # a chart name in FZC Django, not a chart group name.
+                    rt_code = ladder_spec['record_type']
+                    chart_name = name
+                    chart = Chart.objects.get(
+                        chart_group=cg, name=chart_name)
+                    key = (
+                        php_ladder_id, cup_id, course_id, rt_code)
+                    self.php_to_django_chart_lookup[key] = chart
+                else:
+                    # Multiple record types.
+                    record_types = ladder_spec['record_types']
+                    cg_name = name
+                    child_cg = ChartGroup.objects.get(
+                        game=game, parent_group=cg, name=cg_name)
+                    for rt_code, rt_name in record_types.items():
+                        chart = child_cg.charts.get(name=rt_name)
+                        key = (
+                            php_ladder_id, cup_id, course_id, rt_code)
+                        self.php_to_django_chart_lookup[key] = chart
+
+                if 'ignored_record_types' in ladder_spec:
+                    for rt_code in ladder_spec['ignored_record_types']:
+                        key = (php_ladder_id, cup_id, course_id, rt_code)
+                        self.php_ignored_charts.add(key)
+            else:
+                cg_name = name
+                child_cg = ChartGroup.objects.get(
+                    game=game, parent_group=cg, name=cg_name)
+                self.visit_chart_group(
+                    child_cg, content, php_ladder_id, game, ladder_spec)
+
     def handle(self, *args, **options):
 
         # Connect to the MySQL DB
@@ -75,7 +118,8 @@ class Command(BaseCommand):
         # -> FZC Django chart.
         # Also a lookup of FZC PHP ladder -> filters.
 
-        fzcphp_to_fzcdjango_chart_lookup = dict()
+        self.php_to_django_chart_lookup = dict()
+        self.php_ignored_charts = set()
         fzcphp_ladders_to_filters = dict()
 
         with open(
@@ -87,22 +131,10 @@ class Command(BaseCommand):
 
             php_ladder_id = ladder_spec['ladder_id']
             game = Game.objects.get(name=ladder_spec['game_name'])
-            cups_cg = game.chartgroup_set.get(parent_group=None, name="Cups")
+            charts_spec = ladder_spec['charts']
 
-            for cup_id, cup_spec in enumerate(ladder_spec['cups'], 1):
-                cup_cg = cups_cg.child_groups.get(name=cup_spec['name'])
-
-                for course_id, course_name in enumerate(
-                        cup_spec['courses'], 1):
-                    course_cg = cup_cg.child_groups.get(name=course_name)
-
-                    for record_type_code, record_type_name in ladder_spec[
-                            'record_types'].items():
-
-                        chart = course_cg.charts.get(name=record_type_name)
-                        lookup_key = (
-                            php_ladder_id, cup_id, course_id, record_type_code)
-                        fzcphp_to_fzcdjango_chart_lookup[lookup_key] = chart
+            self.visit_chart_group(
+                None, charts_spec, php_ladder_id, game, ladder_spec)
 
             filter_dict = ladder_spec.get('filters', dict())
             fzcphp_ladders_to_filters[php_ladder_id] = filter_dict
@@ -121,9 +153,9 @@ class Command(BaseCommand):
         # Make a lookup of normalized machine names to canonical machine names.
         self.normalized_to_canonical_machines = dict()
         for filter_group in FilterGroup.objects.filter(name="Machine"):
-            for filter in filter_group.filter_set.all():
-                normalized = self.normalize_machine_name(filter.name)
-                self.normalized_to_canonical_machines[normalized] = filter.name
+            for f in filter_group.filter_set.all():
+                normalized = self.normalize_machine_name(f.name)
+                self.normalized_to_canonical_machines[normalized] = f.name
 
         # Make a lookup of user id on FZC PHP -> username.
         mysql_cur.execute("SELECT user_id, username FROM phpbb_users;")
@@ -138,9 +170,11 @@ class Command(BaseCommand):
         # For example, if a time is found in both max speed and open ladders
         # for GX, we want to make sure we add it with max speed filters.
 
-        # TODO: We're only processing records for GX time attack for now, but
+        # TODO: We're only processing records for GX for now, but
         # should cover other ladders and games later.
         ladder_order = [
+            # F-Zero GX story: max speed, snaking
+            11, 12,
             # F-Zero GX time attack: max speed, snaking, open
             5, 8, 4,
         ]
@@ -176,7 +210,9 @@ class Command(BaseCommand):
                 php_record['cup_id'],
                 php_record['course_id'],
                 php_record['record_type'])
-            chart = fzcphp_to_fzcdjango_chart_lookup[lookup_key]
+            if lookup_key in self.php_ignored_charts:
+                continue
+            chart = self.php_to_django_chart_lookup[lookup_key]
             chart_type = chart.chart_type
 
             # Users/Players.
@@ -233,19 +269,30 @@ class Command(BaseCommand):
                     # apply to top speeds.
                     pass
                 else:
-                    filter = filter_group.filter_set.get(name=filter_name)
-                    record_filters.append(filter)
+                    f = filter_group.filter_set.get(name=filter_name)
+                    record_filters.append(f)
 
             # Machine filter.
-            machine_filter_group = chart_type.filter_groups.get(name="Machine")
-            canonical_machine_name = self.get_canonical_machine_name(
-                php_record['ship'])
-            if canonical_machine_name:
-                machine_filter = machine_filter_group.filter_set.get(
-                    name=canonical_machine_name)
-                record_filters.append(machine_filter)
+            try:
+                machine_filter_group = chart_type.filter_groups.get(
+                    name="Machine")
+            except FilterGroup.DoesNotExist:
+                # No machine selection for this chart type.
+                pass
             else:
-                unrecognized_ships.add(php_record['ship'])
+                canonical_machine_name = self.get_canonical_machine_name(
+                    php_record['ship'])
+                if canonical_machine_name:
+                    # We recognize this machine name or know how to fix it.
+                    machine_filter = machine_filter_group.filter_set.get(
+                        name=canonical_machine_name)
+                    record_filters.append(machine_filter)
+                elif php_record['ship'] == '':
+                    # No machine specified.
+                    pass
+                else:
+                    # Don't know how to fix this machine name.
+                    unrecognized_ships.add(php_record['ship'])
 
             record.filters.add(*record_filters)
 

@@ -1,0 +1,64 @@
+F-Zero GX:
+
+  - name: Open
+    kind: MAIN
+    chart_group: Cups
+    chart_tags:
+      Course time: 1.0
+      Best lap: 1.0
+
+  - name: Max speed
+    kind: MAIN
+    chart_group: Cups
+    filters:
+      - group: Setting
+        name: 100%
+      - group: Checkpoint skips
+        name: Not used
+      - group: Max speed snaking
+        name: Not used
+      - group: HSSA
+        name: Not used
+    chart_tags:
+      Course time: 1.0
+      Best lap: 1.0
+
+  - name: Snaking
+    kind: MAIN
+    chart_group: Cups
+    filters:
+      - group: Setting
+        name: 0%
+      - group: Checkpoint skips
+        name: Not used
+      - group: Spaceflying
+        name: Not used
+      - group: HSSA
+        name: Not used
+    chart_tags:
+      Course time: 1.0
+      Best lap: 1.0
+
+  - name: Story Max Speed
+    kind: MAIN
+    chart_group: Story
+    filters:
+      - group: Setting
+        name: 100%
+      - group: HSSA
+        name: Not used
+    # No tags, meaning no ladder-page subtotals and all charts weighted 1.0
+
+  - name: Story Snaking
+    kind: MAIN
+    chart_group: Story
+    filters:
+      - group: Setting
+        name: 0%
+      - group: HSSA
+        name: Not used
+    # No tags, meaning no ladder-page subtotals and all charts weighted 1.0
+
+  - name: Story Open
+    kind: SIDE
+    chart_group: Story

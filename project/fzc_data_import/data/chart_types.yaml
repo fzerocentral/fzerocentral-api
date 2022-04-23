@@ -1,0 +1,60 @@
+F-Zero GX:
+
+  - name: Course time
+    format_spec:
+      - multiplier: 60
+        suffix: "'"
+      - multiplier: 1000
+        suffix: '"'
+        digits: 2
+      - digits: 3
+    order_ascending: True
+    filter_groups:
+      - Machine
+      - Setting
+      - Checkpoint skips
+      - Spaceflying
+      - Max speed snaking
+      - HSSA
+
+  - name: Best lap
+    format_spec:
+      - multiplier: 60
+        suffix: "'"
+      - multiplier: 1000
+        suffix: '"'
+        digits: 2
+      - digits: 3
+    order_ascending: True
+    filter_groups:
+      - Machine
+      - Setting
+      - Checkpoint skips
+      - Spaceflying
+      - Max speed snaking
+      - HSSA
+
+  - name: Top speed
+    format_spec:
+      - suffix: " km/h"
+    order_ascending: False
+    filter_groups:
+      - Machine
+      - Setting
+      - Spaceflying
+      - Max speed snaking
+      - HSSA
+
+  # Story mode
+  - name: Clear time
+    format_spec:
+      - multiplier: 60
+        suffix: "'"
+      - multiplier: 1000
+        suffix: '"'
+        digits: 2
+      - digits: 3
+    order_ascending: True
+    filter_groups:
+      - Setting
+      - HSSA

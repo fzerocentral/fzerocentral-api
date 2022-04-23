@@ -23,42 +23,42 @@ def apply_filter_spec(records: QuerySet, filter_spec_str: str) -> QuerySet:
             raise ValueError(
                 f"Could not parse filter spec: {filter_spec_str}")
         filter_id, type_suffix = regex_match.groups()
-        filter = Filter.objects.get(id=filter_id)
+        f = Filter.objects.get(id=filter_id)
 
         match type_suffix:
             case '':
                 # No suffix; basic filter matching.
-                if filter.usage_type == Filter.UsageTypes.CHOOSABLE.value:
+                if f.usage_type == Filter.UsageTypes.CHOOSABLE.value:
                     # The record uses this filter.
                     records = records.filter(filters=filter_id)
-                elif filter.usage_type == Filter.UsageTypes.IMPLIED.value:
+                elif f.usage_type == Filter.UsageTypes.IMPLIED.value:
                     # The record has a filter that implies this filter.
                     records = records.filter(
-                        filters__in=filter.incoming_filter_implications.all())
+                        filters__in=f.incoming_filter_implications.all())
             case 'n':
                 # Negation.
-                if filter.usage_type == Filter.UsageTypes.CHOOSABLE.value:
+                if f.usage_type == Filter.UsageTypes.CHOOSABLE.value:
                     # The record has a filter in this group that doesn't
                     # match the specified filter.
                     records = records \
-                        .filter(filters__filter_group=filter.filter_group) \
+                        .filter(filters__filter_group=f.filter_group) \
                         .exclude(filters=filter_id)
-                elif filter.usage_type == Filter.UsageTypes.IMPLIED.value:
+                elif f.usage_type == Filter.UsageTypes.IMPLIED.value:
                     # The record has a filter in this group that doesn't
                     # imply the specified filter.
                     records = records \
-                        .filter(filters__filter_group=filter.filter_group) \
-                        .exclude(filters__in=filter.incoming_filter_implications.all())
+                        .filter(filters__filter_group=f.filter_group) \
+                        .exclude(filters__in=f.incoming_filter_implications.all())
             case 'le':
                 # Less than or equal to, for numeric filters.
                 records = records.filter(
-                    filters__filter_group=filter.filter_group,
-                    filters__numeric_value__lte=filter.numeric_value)
+                    filters__filter_group=f.filter_group,
+                    filters__numeric_value__lte=f.numeric_value)
             case 'ge':
                 # Greater than or equal to, for numeric filters.
                 records = records.filter(
-                    filters__filter_group=filter.filter_group,
-                    filters__numeric_value__gte=filter.numeric_value)
+                    filters__filter_group=f.filter_group,
+                    filters__numeric_value__gte=f.numeric_value)
             case _:
                 raise ValueError(
                     f"Unknown filter type suffix: {type_suffix}")

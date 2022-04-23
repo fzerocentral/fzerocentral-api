@@ -1,0 +1,47 @@
+F-Zero GX:
+
+  - name: Machine
+    show_by_default: True
+    description: "Racing machine used for the run."
+    kind: SELECT
+    filters: []    # Machine filters are covered in a separate file
+
+  - name: Setting
+    show_by_default: True
+    description: "Acceleration/max speed setting used for the run. 0% all the way at the left, 100% all the way at the right."
+    kind: NUMERIC
+    filters:
+      - [0%, 0]
+      - [100%, 100]
+
+  - name: Checkpoint skips
+    show_by_default: False
+    description: "Tricking the game into counting a lap without advancing the machine's checkpoint state all the way around the track."
+    kind: SELECT
+    filters:
+      - Used
+      - Not used
+
+  - name: Spaceflying
+    show_by_default: False
+    description: "Performing two or more consecutive snaking patterns in the air, using a machine that weighs less than 2050 kg."
+    kind: SELECT
+    filters:
+      - Used
+      - Not used
+
+  - name: Max speed snaking
+    show_by_default: False
+    description: "(Only applies to 100% settings and E/D body custom machines) Quick-turn alternations which are not naturally required by the track - either by a curve, or to align a certain position and angle."
+    kind: SELECT
+    filters:
+      - Used
+      - Not used
+
+  - name: HSSA
+    show_by_default: False
+    description: "Hyper Speed Side Attacks: mashing both the acceleration and side attack inputs to perform side attacks more rapidly than the game normally allows."
+    kind: SELECT
+    filters:
+      - Used
+      - Not used
