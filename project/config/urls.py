@@ -10,6 +10,8 @@ urlpatterns = [
     path('charts/', include('charts.urls', namespace='charts')),
     path('chart_groups/',
          include('chart_groups.urls', namespace='chart_groups')),
+    path('chart_tags/',
+         include('chart_tags.urls', namespace='chart_tags')),
     path('chart_types/',
          include('chart_types.urls', namespace='chart_types')),
     path('filters/', include('filters.urls', namespace='filters')),
