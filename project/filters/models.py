@@ -15,11 +15,6 @@ class Filter(models.Model):
 
     filter_group = models.ForeignKey(FilterGroup, on_delete=models.CASCADE)
 
-    class SpecModifiers(models.TextChoices):
-        NOT = 'n', "NOT"
-        GREATER_OR_EQUAL = 'ge', ">="
-        LESS_OR_EQUAL = 'le', "<="
-
     outgoing_filter_implications = models.ManyToManyField(
         'self', symmetrical=False,
         related_name='incoming_filter_implications')
