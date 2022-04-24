@@ -2,9 +2,11 @@ from rest_framework.generics import (
     ListCreateAPIView, RetrieveUpdateDestroyAPIView)
 from rest_framework_json_api.views import RelationshipView
 
+from core.utils import filter_queryset_by_param
+from ladders.models import Ladder
 from .models import Filter
 from .serializers import FilterSerializer
-from .utils import apply_name_search
+from .utils import apply_name_search, FilterSpec
 
 
 class FilterIndex(ListCreateAPIView):
@@ -14,28 +16,32 @@ class FilterIndex(ListCreateAPIView):
         queryset = Filter.objects.all().order_by('name')
 
         # Comma separated IDs like 1,3,9,24
-        filter_ids = self.request.query_params.get('filter_ids')
-        if filter_ids is not None and filter_ids != '':
-            queryset = queryset.filter(id__in=filter_ids.split(','))
+        filter_ids_str = self.request.query_params.get('filter_ids')
+        if filter_ids_str is not None and filter_ids_str != '':
+            queryset = queryset.filter(id__in=filter_ids_str.split(','))
 
-        filter_group_id = self.request.query_params.get('filter_group_id')
-        if filter_group_id is not None:
-            queryset = queryset.filter(filter_group=filter_group_id)
+        queryset = filter_queryset_by_param(
+            self.request, 'filter_group_id',
+            queryset, 'filter_group')
 
-        usage_type = self.request.query_params.get('usage_type')
-        if usage_type is not None:
-            queryset = queryset.filter(usage_type=usage_type)
+        queryset = filter_queryset_by_param(
+            self.request, 'usage_type',
+            queryset, 'usage_type')
 
-        implies_filter_id = self.request.query_params.get('implies_filter_id')
-        if implies_filter_id is not None:
-            queryset = queryset.filter(
-                outgoing_filter_implications=implies_filter_id)
+        queryset = filter_queryset_by_param(
+            self.request, 'implies_filter_id',
+            queryset, 'outgoing_filter_implications')
 
-        implied_by_filter_id = self.request.query_params.get(
-            'implied_by_filter_id')
-        if implied_by_filter_id is not None:
-            queryset = queryset.filter(
-                incoming_filter_implications=implied_by_filter_id)
+        queryset = filter_queryset_by_param(
+            self.request, 'implied_by_filter_id',
+            queryset, 'incoming_filter_implications')
+
+        ladder_id = self.request.query_params.get('ladder_id')
+        if ladder_id is not None:
+            ladder = Ladder.objects.get(id=ladder_id)
+            filter_spec = FilterSpec(ladder.filter_spec)
+            filter_ids = [item['filter_id'] for item in filter_spec.items]
+            queryset = queryset.filter(id__in=filter_ids)
 
         name_search = self.request.query_params.get('name_search')
         if name_search is not None and name_search != '':
