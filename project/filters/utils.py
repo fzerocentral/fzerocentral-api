@@ -24,9 +24,14 @@ class FilterSpec:
             Dash-separated tokens, with each token having a filter ID number
             and possibly a modifier suffix indicating how to apply the filter.
         """
-        self.spec_str = spec_str
-        filter_spec_item_strs = spec_str.split('-')
         self.items = []
+
+        self.spec_str = spec_str
+        if spec_str == '':
+            # No items.
+            return
+
+        filter_spec_item_strs = spec_str.split('-')
 
         for item_index, item_str in enumerate(filter_spec_item_strs):
             regex_match = self.spec_item_regex.fullmatch(item_str)
@@ -38,6 +43,15 @@ class FilterSpec:
                 filter_id=filter_id,
                 modifier=self.Modifiers(modifier_code),
             ))
+
+    @classmethod
+    def merge_two_instances(cls, spec1, spec2):
+        if spec1.spec_str == '':
+            return spec2
+        if spec2.spec_str == '':
+            return spec1
+        spec_str = f"{spec1.spec_str}-{spec2.spec_str}"
+        return FilterSpec(spec_str)
 
     @property
     def filter_groups(self) -> list[FilterGroup]:

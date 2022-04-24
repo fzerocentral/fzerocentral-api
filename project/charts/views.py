@@ -4,7 +4,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from filters.models import Filter
-from filters.utils import apply_filter_spec
+from filters.utils import apply_filter_spec, FilterSpec
+from ladders.models import Ladder
 from records.models import Record
 from records.utils import (
     add_record_displays, make_record_ranking, sort_records_by_value)
@@ -41,9 +42,22 @@ class ChartRanking(APIView):
 
         queryset = Record.objects.filter(chart=chart_id)
 
-        filter_spec = self.request.query_params.get('filters')
-        if filter_spec is not None and filter_spec != '':
-            queryset = apply_filter_spec(queryset, filter_spec)
+        # Both the `ladder_id` and `filters` parameters describe how to
+        # filter the records.
+
+        ladder_id = self.request.query_params.get('ladder_id')
+        if ladder_id is None:
+            ladder_filter_spec = FilterSpec('')
+        else:
+            ladder = Ladder.objects.get(id=ladder_id)
+            ladder_filter_spec = FilterSpec(ladder.filter_spec)
+
+        param_filter_spec_str = self.request.query_params.get('filters', '')
+        param_filter_spec = FilterSpec(param_filter_spec_str)
+
+        merged_filter_spec = FilterSpec.merge_two_instances(
+            ladder_filter_spec, param_filter_spec)
+        queryset = apply_filter_spec(queryset, merged_filter_spec)
 
         # Sort records best-first.
         queryset = sort_records_by_value(queryset, chart_id)
