@@ -10,11 +10,11 @@ from records.models import Record
 from records.utils import (
     add_record_displays, make_record_ranking, sort_records_by_value)
 from .models import ChartGroup
-from .serializers import ChartGroupSerializer, ChartGroupHierarchySerializer
+from .serializers import ChartGroupSerializer
 
 
 class ChartGroupIndex(ListAPIView):
-    serializer_class = ChartGroupHierarchySerializer
+    serializer_class = ChartGroupSerializer
 
     def get_queryset(self):
         queryset = ChartGroup.objects.all().order_by('id')
@@ -40,6 +40,33 @@ class ChartGroupDetail(RetrieveAPIView):
         return ChartGroup.objects.all()
     serializer_class = ChartGroupSerializer
     lookup_url_kwarg = 'group_id'
+
+
+class ChartGroupHierarchy(APIView):
+
+    @classmethod
+    def visit_child_group(cls, cg):
+        hierarchy = []
+        if cg.child_groups.exists():
+            for child_group in cg.child_groups.order_by('order_in_parent'):
+                hierarchy.append(dict(
+                    name=child_group.name,
+                    chart_group_id=child_group.id,
+                    show_charts_together=child_group.show_charts_together,
+                    items=cls.visit_child_group(child_group),
+                ))
+        else:
+            for chart in cg.charts.order_by('order_in_group'):
+                hierarchy.append(dict(
+                    name=chart.name,
+                    chart_id=chart.id,
+                ))
+        return hierarchy
+
+    def get(self, request, group_id):
+        chart_group = ChartGroup.objects.get(id=group_id)
+        hierarchy = self.visit_child_group(chart_group)
+        return Response(hierarchy)
 
 
 class ChartGroupRanking(APIView):
