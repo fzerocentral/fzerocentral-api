@@ -1,8 +1,10 @@
+import copy
 import re
 
 from django.db.models import Case, QuerySet, TextChoices, When
 from django.conf import settings
 
+from chart_types.models import ChartType
 from filter_groups.models import FilterGroup
 from .models import Filter
 
@@ -69,14 +71,30 @@ class FilterSpec:
             index = filter_groups.index(filter_group)
             self.items.pop(index)
 
+    def is_empty(self):
+        return len(self.items) == 0
+
     def __str__(self):
         return self.spec_str
 
 
-def apply_filter_spec(records: QuerySet, filter_spec: FilterSpec) -> QuerySet:
+def apply_filter_spec(
+        records: QuerySet, filter_spec_in: FilterSpec,
+        chart_type: ChartType = None) -> QuerySet:
     """
-    Filter `records` based on `filter_spec_str`.
+    Filter `records` based on `filter_spec_in`. If `chart_type` is passed,
+    any filter spec parts that don't apply to the chart type are excluded.
     """
+    filter_spec = filter_spec_in
+    if chart_type:
+        non_applicable_fgs = \
+            set(filter_spec_in.filter_groups) \
+            - set(chart_type.filter_groups.all())
+        if non_applicable_fgs:
+            filter_spec = copy.copy(filter_spec_in)
+            for fg in non_applicable_fgs:
+                filter_spec.remove_filter_group(fg)
+
     for item in filter_spec.items:
         filter_id = item['filter_id']
         f = Filter.objects.get(id=filter_id)

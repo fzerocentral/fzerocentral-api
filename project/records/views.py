@@ -1,7 +1,7 @@
 from rest_framework.generics import (
     ListCreateAPIView, RetrieveUpdateDestroyAPIView)
 
-from filters.utils import apply_filter_spec
+from filters.utils import apply_filter_spec, FilterSpec
 from .models import Record
 from .serializers import RecordSerializer
 from .utils import sort_records_by_value
@@ -25,7 +25,7 @@ class RecordIndex(ListCreateAPIView):
 
         filter_spec = self.request.query_params.get('filters')
         if filter_spec is not None and filter_spec != '':
-            queryset = apply_filter_spec(queryset, filter_spec)
+            queryset = apply_filter_spec(queryset, FilterSpec(filter_spec))
 
         # Sorting
 

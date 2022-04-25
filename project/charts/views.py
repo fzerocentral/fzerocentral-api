@@ -3,6 +3,7 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from chart_groups.utils import get_charts_in_hierarchy
 from filters.models import Filter
 from filters.utils import apply_filter_spec, FilterSpec
 from ladders.models import Ladder
@@ -24,7 +25,15 @@ class ChartIndex(ListAPIView):
             queryset = queryset.filter(
                 chart_group=chart_group_id).order_by('order_in_group')
 
-        return queryset
+        # May or may not stay a queryset from here on out.
+        charts = queryset
+
+        ladder_id = self.request.query_params.get('ladder_id')
+        if ladder_id is not None:
+            ladder = Ladder.objects.get(id=ladder_id)
+            charts = get_charts_in_hierarchy(ladder.chart_group)
+
+        return charts
 
 
 class ChartDetail(RetrieveAPIView):
@@ -57,7 +66,8 @@ class ChartRanking(APIView):
 
         merged_filter_spec = FilterSpec.merge_two_instances(
             ladder_filter_spec, param_filter_spec)
-        queryset = apply_filter_spec(queryset, merged_filter_spec)
+        queryset = apply_filter_spec(
+            queryset, merged_filter_spec, chart.chart_type)
 
         # Sort records best-first.
         queryset = sort_records_by_value(queryset, chart_id)
@@ -100,7 +110,8 @@ class ChartRecordHistory(APIView):
 
         filter_spec = self.request.query_params.get('filters')
         if filter_spec is not None and filter_spec != '':
-            queryset = apply_filter_spec(queryset, filter_spec)
+            queryset = apply_filter_spec(
+                queryset, FilterSpec(filter_spec), chart.chart_type)
 
         # Fetch more fields.
         queryset = queryset.annotate(

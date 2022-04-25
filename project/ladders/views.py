@@ -1,5 +1,4 @@
 from collections import defaultdict
-import copy
 from decimal import Decimal
 from operator import itemgetter
 
@@ -83,34 +82,20 @@ class LadderRanking(APIView):
         charts = get_charts_in_hierarchy(ladder.chart_group)
         chart_types = set([chart.chart_type for chart in charts])
         ladder_chart_tags = list(LadderChartTag.objects.filter(ladder=ladder))
+        filter_spec = FilterSpec(ladder.filter_spec)
 
-        if ladder.filter_spec == '':
+        if filter_spec.is_empty():
             all_records = Record.objects.filter(chart__in=charts)
-            filter_specs_by_ct = {ct.id: None for ct in chart_types}
         else:
-            filter_spec = FilterSpec(ladder.filter_spec)
             all_records = Record.objects.none()
-            filter_specs_by_ct = dict()
 
             # Apply the filter spec to the records. Also ensure we only apply
             # the filters that each chart type recognizes.
             for chart_type in chart_types:
-                ct_filter_spec = filter_spec
-
-                non_applicable_fgs = \
-                    set(filter_spec.filter_groups) \
-                    - set(chart_type.filter_groups.all())
-                if non_applicable_fgs:
-                    ct_filter_spec = copy.copy(filter_spec)
-                    for fg in non_applicable_fgs:
-                        ct_filter_spec.remove_filter_group(fg)
-
                 ct_records = Record.objects.filter(
                     chart__in=charts, chart__chart_type=chart_type)
-                ct_records = apply_filter_spec(ct_records, ct_filter_spec)
+                ct_records = apply_filter_spec(ct_records, filter_spec)
                 all_records |= ct_records
-
-                filter_specs_by_ct[chart_type.id] = ct_filter_spec
 
         # All the players in the ladder
 
@@ -157,8 +142,7 @@ class LadderRanking(APIView):
                     lc_tag.weight for lc_tag in ladder_chart_tags
                     if lc_tag.chart_tag_id in applicable_tag_ids])
 
-            filter_spec = filter_specs_by_ct[chart.chart_type_id]
-            if filter_spec:
+            if not filter_spec.is_empty():
                 records = apply_filter_spec(records, filter_spec)
 
             # Sort records best-first.

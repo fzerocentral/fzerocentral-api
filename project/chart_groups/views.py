@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 
 from charts.models import Chart
 from filters.models import Filter
-from filters.utils import apply_filter_spec
+from filters.utils import apply_filter_spec, FilterSpec
 from records.models import Record
 from records.utils import (
     add_record_displays, make_record_ranking, sort_records_by_value)
@@ -86,9 +86,10 @@ class ChartGroupRanking(APIView):
         for chart in chart_group.charts.order_by('order_in_group'):
             queryset = Record.objects.filter(chart=chart)
 
-            filter_spec = self.request.query_params.get('filters')
-            if filter_spec is not None and filter_spec != '':
-                queryset = apply_filter_spec(queryset, filter_spec)
+            filter_spec_str = self.request.query_params.get('filters')
+            if filter_spec_str is not None and filter_spec_str != '':
+                queryset = apply_filter_spec(
+                    queryset, FilterSpec(filter_spec_str), chart.chart_type)
 
             # Fetch more fields.
             queryset = queryset.annotate(
