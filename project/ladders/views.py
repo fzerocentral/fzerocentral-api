@@ -9,11 +9,14 @@ from rest_framework.views import APIView
 
 from chart_groups.utils import get_charts_in_hierarchy
 from chart_types.utils import apply_format_spec
+from charts.models import Chart
 from core.utils import (
     add_ranks,
     delete_ordered_obj_prep,
+    filter_queryset_by_param,
     insert_ordered_obj_prep,
-    reorder_obj_prep)
+    reorder_obj_prep,
+)
 from filters.utils import apply_filter_spec, FilterSpec
 from players.models import Player
 from records.models import Record
@@ -26,16 +29,25 @@ class LadderIndex(ListCreateAPIView):
     serializer_class = LadderSerializer
 
     def get_queryset(self):
-        queryset = Ladder.objects.all()
+        queryset = Ladder.objects.order_by('order_in_game_and_kind')
 
-        game_id = self.request.query_params.get('game_id')
-        if game_id is not None:
-            queryset = queryset.filter(
-                game=game_id).order_by('order_in_game_and_kind')
+        queryset = filter_queryset_by_param(
+            self.request, 'game_id', queryset, 'game')
 
-        kind = self.request.query_params.get('kind')
-        if kind is not None:
-            queryset = queryset.filter(kind=kind)
+        queryset = filter_queryset_by_param(
+            self.request, 'kind', queryset, 'kind')
+
+        chart_id = self.request.query_params.get('chart_id')
+        if chart_id is not None:
+            chart = Chart.objects.get(id=chart_id)
+            # Get the chart groups that contain this chart.
+            groups = []
+            group = chart.chart_group
+            while group:
+                groups.append(group)
+                group = group.parent_group
+            # Ensure the ladder's chart group is one of these groups.
+            queryset = queryset.filter(chart_group__in=groups)
 
         return queryset
 
