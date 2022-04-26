@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from chart_groups.utils import get_charts_in_hierarchy
+from core.utils import require_one_of_params
 from filters.models import Filter
 from filters.utils import apply_filter_spec, FilterSpec
 from ladders.models import Ladder
@@ -51,23 +52,9 @@ class ChartRanking(APIView):
 
         queryset = Record.objects.filter(chart=chart_id)
 
-        # Both the `ladder_id` and `filters` parameters describe how to
-        # filter the records.
-
-        ladder_id = self.request.query_params.get('ladder_id')
-        if ladder_id is None:
-            ladder_filter_spec = FilterSpec('')
-        else:
-            ladder = Ladder.objects.get(id=ladder_id)
-            ladder_filter_spec = FilterSpec(ladder.filter_spec)
-
-        param_filter_spec_str = self.request.query_params.get('filters', '')
-        param_filter_spec = FilterSpec(param_filter_spec_str)
-
-        merged_filter_spec = FilterSpec.merge_two_instances(
-            ladder_filter_spec, param_filter_spec)
+        filter_spec = FilterSpec.from_query_params(self.request.query_params)
         queryset = apply_filter_spec(
-            queryset, merged_filter_spec, chart.chart_type)
+            queryset, filter_spec, chart.chart_type)
 
         # Sort records best-first.
         queryset = sort_records_by_value(queryset, chart_id)
@@ -92,6 +79,63 @@ class ChartRanking(APIView):
         add_record_displays(records, chart.chart_type.format_spec)
 
         return Response(records)
+
+
+class ChartOtherRecords(APIView):
+    """
+    Given a chart and a list of players, get those players' records for the
+    other charts in the same chart group.
+    """
+    def get(self, request, chart_id):
+        chart = Chart.objects.get(id=chart_id)
+        chart_group = chart.chart_group
+        if not chart_group.show_charts_together:
+            raise ValueError(
+                "This endpoint only applies to chart groups where"
+                " show_charts_together is true.")
+
+        # Must specify the players we're getting records for. This is
+        # generally the set of players who have records in the specified
+        # chart.
+        require_one_of_params(request, 'player_ids')
+
+        # Comma separated IDs like 1,3,9,24
+        player_ids_str = self.request.query_params.get('player_ids')
+        player_ids = player_ids_str.split(',')
+
+        # Charts in the group other than the specified chart
+        other_charts = list(
+            chart_group.charts.order_by('order_in_group')
+                .exclude(id=chart.id))
+
+        other_charts_records = dict()
+
+        for chart in other_charts:
+            queryset = Record.objects.filter(chart=chart)
+
+            queryset = queryset.filter(player__in=player_ids)
+
+            filter_spec = FilterSpec.from_query_params(
+                self.request.query_params)
+            queryset = apply_filter_spec(
+                queryset, filter_spec, chart.chart_type)
+
+            # Sort records best-first.
+            queryset = sort_records_by_value(queryset, chart.id)
+
+            records = queryset.values(
+                'id', 'value', 'player_id')
+
+            # Probably won't really need the ranks, but we do need to
+            # limit to one record per player.
+            records = make_record_ranking(records)
+
+            add_record_displays(records, chart.chart_type.format_spec)
+
+            other_charts_records[chart.id] = \
+                {r['player_id']: r for r in records}
+
+        return Response(other_charts_records)
 
 
 class ChartRecordHistory(APIView):

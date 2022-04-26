@@ -12,6 +12,9 @@ urlpatterns = [
         '<int:chart_id>/ranking/',
         views.ChartRanking.as_view(), name="ranking"),
     path(
+        '<int:chart_id>/other_records/',
+        views.ChartOtherRecords.as_view(), name="other_records"),
+    path(
         '<int:chart_id>/record_history/',
         views.ChartRecordHistory.as_view(), name="record_history"),
 ]

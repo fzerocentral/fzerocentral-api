@@ -6,6 +6,7 @@ from django.conf import settings
 
 from chart_types.models import ChartType
 from filter_groups.models import FilterGroup
+from ladders.models import Ladder
 from .models import Filter
 
 
@@ -45,6 +46,24 @@ class FilterSpec:
                 filter_id=filter_id,
                 modifier=self.Modifiers(modifier_code),
             ))
+
+    @classmethod
+    def from_query_params(cls, query_params):
+        # Both the `ladder_id` and `filters` parameters describe how to
+        # filter the records.
+
+        ladder_id = query_params.get('ladder_id')
+        if ladder_id is None:
+            ladder_filter_spec = FilterSpec('')
+        else:
+            ladder = Ladder.objects.get(id=ladder_id)
+            ladder_filter_spec = FilterSpec(ladder.filter_spec)
+
+        param_filter_spec_str = query_params.get('filters', '')
+        param_filter_spec = FilterSpec(param_filter_spec_str)
+
+        return FilterSpec.merge_two_instances(
+            ladder_filter_spec, param_filter_spec)
 
     @classmethod
     def merge_two_instances(cls, spec1, spec2):

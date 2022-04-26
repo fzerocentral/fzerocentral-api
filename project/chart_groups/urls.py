@@ -11,7 +11,4 @@ urlpatterns = [
     path(
         '<int:group_id>/hierarchy/',
         views.ChartGroupHierarchy.as_view(), name="hierarchy"),
-    path(
-        '<int:group_id>/ranking/',
-        views.ChartGroupRanking.as_view(), name="ranking"),
 ]
