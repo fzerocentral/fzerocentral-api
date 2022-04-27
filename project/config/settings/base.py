@@ -126,6 +126,11 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework_json_api.renderers.JSONRenderer',
     ),
+    'DEFAULT_PERMISSION_CLASSES': [
+        # Require authentication for POST or anything else that writes.
+        # Anything that reads is open to the public.
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ],
     'DEFAULT_METADATA_CLASS': 'rest_framework_json_api.metadata.JSONAPIMetadata',
     'DEFAULT_SCHEMA_CLASS': 'rest_framework_json_api.schemas.openapi.AutoSchema',
     'DEFAULT_FILTER_BACKENDS': (
