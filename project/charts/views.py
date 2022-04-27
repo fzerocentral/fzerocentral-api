@@ -140,10 +140,10 @@ class ChartRecordHistory(APIView):
         if player_id is not None:
             queryset = queryset.filter(player=player_id)
 
-        filter_spec = self.request.query_params.get('filters')
-        if filter_spec is not None and filter_spec != '':
-            queryset = apply_filter_spec(
-                queryset, FilterSpec(filter_spec), chart.chart_type)
+        filter_spec = FilterSpec.from_query_params(
+            self.request.query_params)
+        queryset = apply_filter_spec(
+            queryset, filter_spec, chart.chart_type)
 
         # Fetch more fields.
         queryset = queryset.annotate(
