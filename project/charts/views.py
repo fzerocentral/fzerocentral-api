@@ -4,7 +4,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from chart_groups.utils import get_charts_in_hierarchy
-from core.utils import require_one_of_params
 from filters.models import Filter
 from filters.utils import apply_filter_spec, FilterSpec
 from ladders.models import Ladder
@@ -83,7 +82,7 @@ class ChartRanking(APIView):
 
 class ChartOtherRecords(APIView):
     """
-    Given a chart and a list of players, get those players' records for the
+    Given a chart, get players' records for the
     other charts in the same chart group.
     """
     def get(self, request, chart_id):
@@ -94,15 +93,6 @@ class ChartOtherRecords(APIView):
                 "This endpoint only applies to chart groups where"
                 " show_charts_together is true.")
 
-        # Must specify the players we're getting records for. This is
-        # generally the set of players who have records in the specified
-        # chart.
-        require_one_of_params(request, 'player_ids')
-
-        # Comma separated IDs like 1,3,9,24
-        player_ids_str = self.request.query_params.get('player_ids')
-        player_ids = player_ids_str.split(',')
-
         # Charts in the group other than the specified chart
         other_charts = list(
             chart_group.charts.order_by('order_in_group')
@@ -112,8 +102,6 @@ class ChartOtherRecords(APIView):
 
         for chart in other_charts:
             queryset = Record.objects.filter(chart=chart)
-
-            queryset = queryset.filter(player__in=player_ids)
 
             filter_spec = FilterSpec.from_query_params(
                 self.request.query_params)
