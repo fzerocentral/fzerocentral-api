@@ -106,7 +106,8 @@ class LadderRanking(APIView):
             for chart_type in chart_types:
                 ct_records = Record.objects.filter(
                     chart__in=charts, chart__chart_type=chart_type)
-                ct_records = apply_filter_spec(ct_records, filter_spec)
+                ct_records = apply_filter_spec(
+                    ct_records, filter_spec, chart_type=chart_type)
                 all_records |= ct_records
 
         # All the players in the ladder
@@ -155,7 +156,8 @@ class LadderRanking(APIView):
                     if lc_tag.chart_tag_id in applicable_tag_ids])
 
             if not filter_spec.is_empty():
-                records = apply_filter_spec(records, filter_spec)
+                records = apply_filter_spec(
+                    records, filter_spec, chart_type=chart.chart_type)
 
             # Sort records best-first.
             records = sort_records_by_value(records, chart.id)
