@@ -6,9 +6,10 @@ Data API for the (upcoming) F-Zero Central website. Uses the Django web framewor
 ## Installation for development environments
 
 - `git clone` this repository.
-- Install the latest Python 3.10.x.
+- Install the latest Python 3.9.x (3.10 is not available on the FZC server yet).
 - Install the latest PostgreSQL.
   - Create a user `django`, and create a database `fzerocentral`, which grants full permissions to the user you created. You can also use different names, as long as you specify those names in the `.env` file described later.
+  - Other database engines like MariaDB, MySQL, or SQLite may also work, but there are differences to be aware of: https://docs.djangoproject.com/en/dev/ref/databases/ 
 - Set up a virtual environment and install Python packages there:
   - Create a virtual environment at the directory of your choice (can be outside of the repository): `python -m venv <path/to/environment>`
     - If your system has multiple Python installations, be sure to use the `python` executable from the correct installation.

@@ -67,7 +67,7 @@ ROOT_URLCONF = 'config.urls'
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': env('DATABASE_ENGINE', default='django.db.backends.postgresql'),
         # If True, wraps each request (view function) in a transaction by
         # default. Individual view functions can override this behavior with
         # the non_atomic_requests decorator.
