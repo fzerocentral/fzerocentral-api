@@ -195,17 +195,16 @@ class FilterGroupPatchAndDeleteTest(APITestCase):
         self.game.refresh_from_db()
         actual_ordering = []
         for fg in self.game.filtergroup_set.order_by('order_in_game'):
-            match fg.id:
-                case self.fg1.id:
-                    actual_ordering.append(1)
-                case self.fg2.id:
-                    actual_ordering.append(2)
-                case self.fg3.id:
-                    actual_ordering.append(3)
-                case self.fg4.id:
-                    actual_ordering.append(4)
-                case self.fg5.id:
-                    actual_ordering.append(5)
+            if fg.id == self.fg1.id:
+                actual_ordering.append(1)
+            elif fg.id == self.fg2.id:
+                actual_ordering.append(2)
+            elif fg.id == self.fg3.id:
+                actual_ordering.append(3)
+            elif fg.id == self.fg4.id:
+                actual_ordering.append(4)
+            elif fg.id == self.fg5.id:
+                actual_ordering.append(5)
         self.assertListEqual(actual_ordering, list(expected_ordering))
 
     def test_reorder_forward(self):

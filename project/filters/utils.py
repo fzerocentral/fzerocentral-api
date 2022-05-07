@@ -117,41 +117,41 @@ def apply_filter_spec(
     for item in filter_spec.items:
         filter_id = item['filter_id']
         f = Filter.objects.get(id=filter_id)
+        modifier = item['modifier']
 
-        match item['modifier']:
-            case FilterSpec.Modifiers.IS:
-                # Basic filter matching.
-                if f.usage_type == Filter.UsageTypes.CHOOSABLE.value:
-                    # The record uses this filter.
-                    records = records.filter(filters=filter_id)
-                elif f.usage_type == Filter.UsageTypes.IMPLIED.value:
-                    # The record has a filter that implies this filter.
-                    records = records.filter(
-                        filters__in=f.incoming_filter_implications.all())
-            case FilterSpec.Modifiers.IS_NOT:
-                # Negation.
-                if f.usage_type == Filter.UsageTypes.CHOOSABLE.value:
-                    # The record has a filter in this group that doesn't
-                    # match the specified filter.
-                    records = records \
-                        .filter(filters__filter_group=f.filter_group) \
-                        .exclude(filters=filter_id)
-                elif f.usage_type == Filter.UsageTypes.IMPLIED.value:
-                    # The record has a filter in this group that doesn't
-                    # imply the specified filter.
-                    records = records \
-                        .filter(filters__filter_group=f.filter_group) \
-                        .exclude(filters__in=f.incoming_filter_implications.all())
-            case FilterSpec.Modifiers.LESS_OR_EQUAL:
-                # Less than or equal to, for numeric filters.
+        if modifier == FilterSpec.Modifiers.IS:
+            # Basic filter matching.
+            if f.usage_type == Filter.UsageTypes.CHOOSABLE.value:
+                # The record uses this filter.
+                records = records.filter(filters=filter_id)
+            elif f.usage_type == Filter.UsageTypes.IMPLIED.value:
+                # The record has a filter that implies this filter.
                 records = records.filter(
-                    filters__filter_group=f.filter_group,
-                    filters__numeric_value__lte=f.numeric_value)
-            case FilterSpec.Modifiers.GREATER_OR_EQUAL:
-                # Greater than or equal to, for numeric filters.
-                records = records.filter(
-                    filters__filter_group=f.filter_group,
-                    filters__numeric_value__gte=f.numeric_value)
+                    filters__in=f.incoming_filter_implications.all())
+        elif modifier == FilterSpec.Modifiers.IS_NOT:
+            # Negation.
+            if f.usage_type == Filter.UsageTypes.CHOOSABLE.value:
+                # The record has a filter in this group that doesn't
+                # match the specified filter.
+                records = records \
+                    .filter(filters__filter_group=f.filter_group) \
+                    .exclude(filters=filter_id)
+            elif f.usage_type == Filter.UsageTypes.IMPLIED.value:
+                # The record has a filter in this group that doesn't
+                # imply the specified filter.
+                records = records \
+                    .filter(filters__filter_group=f.filter_group) \
+                    .exclude(filters__in=f.incoming_filter_implications.all())
+        elif modifier == FilterSpec.Modifiers.LESS_OR_EQUAL:
+            # Less than or equal to, for numeric filters.
+            records = records.filter(
+                filters__filter_group=f.filter_group,
+                filters__numeric_value__lte=f.numeric_value)
+        elif modifier == FilterSpec.Modifiers.GREATER_OR_EQUAL:
+            # Greater than or equal to, for numeric filters.
+            records = records.filter(
+                filters__filter_group=f.filter_group,
+                filters__numeric_value__gte=f.numeric_value)
 
     return records
 
