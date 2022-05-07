@@ -16,7 +16,7 @@ F-Zero GX:
 
   - name: Checkpoint skips
     show_by_default: False
-    description: "Tricking the game into counting a lap without advancing the machine's checkpoint state all the way around the track."
+    description: "A class of techniques used to trick the checkpoint system into counting a lap, without actually following the track from start to finish. This generally involves crossing the starting line backwards while airborne."
     kind: SELECT
     filters:
       - Used
@@ -24,7 +24,7 @@ F-Zero GX:
 
   - name: Spaceflying
     show_by_default: False
-    description: "Performing two or more consecutive snaking patterns in the air, using a machine that weighs less than 2050 kg."
+    description: "A) Performing two or more consecutive snaking patterns in the air, using a machine that weighs less than 2050 kg, or B) Flying through the whole course, regardless of machine weight."
     kind: SELECT
     filters:
       - Used
