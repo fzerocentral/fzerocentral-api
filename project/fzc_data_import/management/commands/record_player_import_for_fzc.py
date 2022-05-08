@@ -1,3 +1,4 @@
+import datetime
 import getpass
 import re
 from zoneinfo import ZoneInfo
@@ -103,95 +104,47 @@ class Command(BaseCommand):
                 self.visit_chart_group(
                     child_cg, content, php_ladder_id, game, ladder_spec)
 
-    def handle(self, *args, **options):
+    def process_records(self, game_name, php_ladder_ids):
+        """Process records for a particular game."""
 
-        # Connect to the MySQL DB
-        password = getpass.getpass(
-            f"Enter password for MySQL user {options['mysql_user']}: ")
-        mysql_conn = MySQLdb.connect(
-            host=options['mysql_host'], port=options['mysql_port'],
-            user=options['mysql_user'], passwd=password,
-            db=options['mysql_dbname'], charset='utf8')
-        mysql_cur = mysql_conn.cursor(MySQLdb.cursors.DictCursor)
+        game = Game.objects.get(name=game_name)
 
-        # Make a lookup of FZC PHP ladder / cup / course / record type
-        # -> FZC Django chart.
-        # Also a lookup of FZC PHP ladder -> filters.
+        # Make a lookup of filter IDs.
+        filter_lookup = dict()
+        for filter_group in game.filtergroup_set.all():
+            filter_lookup[filter_group.name] = dict()
+            for filter_vs in filter_group.filter_set.values('id', 'name'):
+                filter_lookup[filter_group.name][filter_vs['name']] = \
+                    filter_vs['id']
 
-        self.php_to_django_chart_lookup = dict()
-        self.php_ignored_charts = set()
-        fzcphp_ladders_to_filters = dict()
-
-        with open(
-                'fzc_data_import/data/fzcphp_ladder_details.yaml',
-                'r') as yaml_file:
-            fzcphp_ladder_details = yaml.full_load(yaml_file)
-
-        for ladder_spec in fzcphp_ladder_details:
-
-            php_ladder_id = ladder_spec['ladder_id']
-            game = Game.objects.get(name=ladder_spec['game_name'])
-            charts_spec = ladder_spec['charts']
-
-            self.visit_chart_group(
-                None, charts_spec, php_ladder_id, game, ladder_spec)
-
-            filter_dict = ladder_spec.get('filters', dict())
-            fzcphp_ladders_to_filters[php_ladder_id] = filter_dict
-
-        # Make a lookup of known ship misspellings in the FZC PHP database.
-        with open(
-                'fzc_data_import/data/ship_misspellings.yaml',
-                'r', encoding='utf-8') as yaml_file:
-            misspellings_data = yaml.full_load(yaml_file)
-
-        self.ship_misspellings = dict()
-        for misspelling, canonical_name in misspellings_data.items():
-            self.ship_misspellings[
-                self.normalize_machine_name(misspelling)] = canonical_name
-
-        # Make a lookup of normalized machine names to canonical machine names.
-        self.normalized_to_canonical_machines = dict()
-        for filter_group in FilterGroup.objects.filter(name="Machine"):
-            for f in filter_group.filter_set.all():
-                normalized = self.normalize_machine_name(f.name)
-                self.normalized_to_canonical_machines[normalized] = f.name
-
-        # Make a lookup of user id on FZC PHP -> username.
-        mysql_cur.execute("SELECT user_id, username FROM phpbb_users;")
-        fzcphp_user_lookup = dict(
-            (u['user_id'], u['username']) for u in mysql_cur.fetchall())
+        # Make a lookup of filter groups of each chart type.
+        ctfg_lookup = dict()
+        for chart_type in game.charttype_set.all():
+            fg_names = chart_type.filter_groups.values_list('name', flat=True)
+            ctfg_lookup[chart_type.id] = set(fg_names)
 
         # Get FZC PHP records.
-        #
-        # We'll process records in a particular FZC-PHP ladder order.
-        # The reason is to process ladders with more specific categories
-        # first, and then more general ones after.
-        # For example, if a time is found in both max speed and open ladders
-        # for GX, we want to make sure we add it with max speed filters.
-
-        # TODO: We're only processing records for GX for now, but
-        # should cover other ladders and games later.
-        ladder_order = [
-            # F-Zero GX story: max speed, snaking
-            11, 12,
-            # F-Zero GX time attack: max speed, snaking, open
-            5, 8, 4,
-        ]
 
         php_records = []
-        for ladder_id in ladder_order:
-            mysql_cur.execute(
+        for php_ladder_id in php_ladder_ids:
+            self.mysql_cur.execute(
                 "SELECT * FROM phpbb_f0_records"
                 " WHERE ladder_id = %(ladder_id)s",
-                dict(ladder_id=ladder_id))
-            php_records.extend(mysql_cur.fetchall())
+                dict(ladder_id=php_ladder_id))
+            php_records.extend(self.mysql_cur.fetchall())
 
         # Convert FZC PHP records to FZC Django records. Also link applicable
         # filters to the records.
 
         fzcphp_deleted_user_ids = set()
         unrecognized_ships = set()
+
+        self.stdout.write(
+            f"""
+            -----
+            {game_name}: processing records
+            -----
+            """)
 
         for php_record in tqdm(php_records):
             # value column is already the same.
@@ -213,18 +166,18 @@ class Command(BaseCommand):
             if lookup_key in self.php_ignored_charts:
                 continue
             chart = self.php_to_django_chart_lookup[lookup_key]
-            chart_type = chart.chart_type
+            chart_type_fg_names = ctfg_lookup[chart.chart_type_id]
 
             # Users/Players.
 
             # Detect deleted users whose records still remain in FZC PHP.
             # We won't add these records, but we'll track the deleted user ids
             # to print after we're done.
-            if php_record['user_id'] not in fzcphp_user_lookup:
+            if php_record['user_id'] not in self.fzcphp_user_lookup:
                 fzcphp_deleted_user_ids.add(php_record['user_id'])
                 continue
 
-            username = fzcphp_user_lookup[php_record['user_id']]
+            username = self.fzcphp_user_lookup[php_record['user_id']]
 
             # Create a new player in FZC Django if needed.
             try:
@@ -256,58 +209,150 @@ class Command(BaseCommand):
             # Set the record's filters.
 
             # Filters specified in YAML.
-            ladder_filters = fzcphp_ladders_to_filters[
+            ladder_filters = self.fzcphp_ladders_to_filters[
                 php_record['ladder_id']]
             record_filters = []
             for filter_group_name, filter_name in ladder_filters.items():
-                try:
-                    filter_group = chart_type.filter_groups.get(
-                        name=filter_group_name)
-                except FilterGroup.DoesNotExist:
-                    # This filter group presumably does not apply to this
-                    # chart type. For example, checkpoint skipping does not
-                    # apply to top speeds.
+                if filter_group_name not in chart_type_fg_names:
+                    # This filter group does not apply to this chart type.
+                    # For example, checkpoint skipping does not apply to
+                    # top speeds.
                     pass
                 else:
-                    f = filter_group.filter_set.get(name=filter_name)
-                    record_filters.append(f)
+                    filter_id = filter_lookup[filter_group_name][filter_name]
+                    record_filters.append(filter_id)
 
             # Machine filter.
-            try:
-                machine_filter_group = chart_type.filter_groups.get(
-                    name="Machine")
-            except FilterGroup.DoesNotExist:
+            if "Machine" not in chart_type_fg_names:
                 # No machine selection for this chart type.
                 pass
-            else:
+            elif game_name == "F-Zero GX":
                 canonical_machine_name = self.get_canonical_machine_name(
                     php_record['ship'])
                 if canonical_machine_name:
                     # We recognize this machine name or know how to fix it.
-                    machine_filter = machine_filter_group.filter_set.get(
-                        name=canonical_machine_name)
-                    record_filters.append(machine_filter)
+                    filter_id = \
+                        filter_lookup["Machine"][canonical_machine_name]
+                    record_filters.append(filter_id)
                 elif php_record['ship'] == '':
                     # No machine specified.
                     pass
                 else:
                     # Don't know how to fix this machine name.
                     unrecognized_ships.add(php_record['ship'])
+            else:
+                # Machines for games other than GX are straightforward.
+                filter_id = filter_lookup["Machine"][php_record['ship']]
+                record_filters.append(filter_id)
 
             record.filters.add(*record_filters)
 
         self.stdout.write(
             f"""
-            Final counts:
+            Counts:
+            {game.record_set.count()} records
+            {game.record_set.aggregate(Count('filters')).get(
+                'filters__count')} filter applications to records
+            """
+        )
+
+        s = ", ".join(
+            [str(user_id) for user_id in fzcphp_deleted_user_ids]) or "None"
+        self.stdout.write(f"Deleted user ids with records in FZC PHP: {s}")
+
+        s = ", ".join(unrecognized_ships) or "None"
+        self.stdout.write(f"Unrecognized ships: {s}")
+
+    def handle(self, *args, **options):
+
+        # Connect to the MySQL DB
+        password = getpass.getpass(
+            f"Enter password for MySQL user {options['mysql_user']}: ")
+        mysql_conn = MySQLdb.connect(
+            host=options['mysql_host'], port=options['mysql_port'],
+            user=options['mysql_user'], passwd=password,
+            db=options['mysql_dbname'], charset='utf8')
+        self.mysql_cur = mysql_conn.cursor(MySQLdb.cursors.DictCursor)
+
+        start_time = datetime.datetime.now()
+
+        # Make a lookup of FZC PHP ladder / cup / course / record type
+        # -> FZC Django chart.
+        # Also a lookup of FZC PHP ladder -> filters.
+
+        self.php_to_django_chart_lookup = dict()
+        self.php_ignored_charts = set()
+        self.fzcphp_ladders_to_filters = dict()
+
+        with open(
+                'fzc_data_import/data/fzcphp_ladder_details.yaml',
+                'r') as yaml_file:
+            fzcphp_ladder_details = yaml.full_load(yaml_file)
+
+        for ladder_spec in fzcphp_ladder_details:
+
+            php_ladder_id = ladder_spec['ladder_id']
+            game = Game.objects.get(name=ladder_spec['game_name'])
+            charts_spec = ladder_spec['charts']
+
+            self.visit_chart_group(
+                None, charts_spec, php_ladder_id, game, ladder_spec)
+
+            filter_dict = ladder_spec.get('filters', dict())
+            self.fzcphp_ladders_to_filters[php_ladder_id] = filter_dict
+
+        # Make a lookup of known GX ship misspellings in the FZC PHP database.
+        with open(
+                'fzc_data_import/data/ship_misspellings.yaml',
+                'r', encoding='utf-8') as yaml_file:
+            misspellings_data = yaml.full_load(yaml_file)
+
+        self.ship_misspellings = dict()
+        for misspelling, canonical_name in misspellings_data.items():
+            self.ship_misspellings[
+                self.normalize_machine_name(misspelling)] = canonical_name
+
+        # Make a lookup of normalized machine names to canonical machine names.
+        self.normalized_to_canonical_machines = dict()
+        for filter_group in FilterGroup.objects.filter(name="Machine"):
+            for f in filter_group.filter_set.all():
+                normalized = self.normalize_machine_name(f.name)
+                self.normalized_to_canonical_machines[normalized] = f.name
+
+        # Make a lookup of user id on FZC PHP -> username.
+        self.mysql_cur.execute("SELECT user_id, username FROM phpbb_users;")
+        self.fzcphp_user_lookup = dict(
+            (u['user_id'], u['username']) for u in self.mysql_cur.fetchall())
+
+        # Process PHP records and add them as Django records.
+        # We'll process records by game. We'll also process in a particular
+        # FZC-PHP ladder order: more specific categories first, and then more
+        # general ones after.
+        # For example, if a time is found in both max speed and open ladders
+        # for GX, we want to make sure we add it with max speed filters.
+        all_php_ladder_ids = {
+            "F-Zero GX": [
+                # F-Zero GX story: max speed, snaking
+                11, 12,
+                # F-Zero GX time attack: max speed, snaking, open
+                5, 8, 4,
+            ],
+        }
+
+        for game_name, php_ladder_ids in all_php_ladder_ids.items():
+            self.process_records(game_name, php_ladder_ids)
+
+        end_time = datetime.datetime.now()
+
+        self.stdout.write(
+            f"""
+            -----
+            Overall counts
+            -----
             {Player.objects.all().count()} players
             {Record.objects.all().count()} records
             {Record.objects.all().aggregate(Count('filters')).get(
                 'filters__count')} filter applications to records
-            """)
-
-        s = ", ".join(
-            [str(user_id) for user_id in fzcphp_deleted_user_ids]) or "None"
-        self.stdout.write(f"Deleted user ids found in FZC PHP: {s}")
-
-        s = ", ".join(unrecognized_ships) or "None"
-        self.stdout.write(f"Unrecognized ships: {s}")
+            Time taken to import: {end_time - start_time}
+            """
+        )

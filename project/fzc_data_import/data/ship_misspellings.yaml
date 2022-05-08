@@ -1,6 +1,8 @@
 # Known misspellings / alternate spellings in the FZC PHP database's 'ship'
 # field. This does not include misspellings which are purely
 # punctuation/space/case based.
+# This (hopefully) only applies to GX, which is the only game which
+# had a free text input instead of a dropdown for the ship field.
 #
 # NOTE: For the final import, ALL pre-conversion machine strings should be
 # included in the record's edit history message when importing records,
