@@ -6,7 +6,6 @@ from zoneinfo import ZoneInfo
 from django.core.management.base import BaseCommand
 from django.db.models import Count
 import MySQLdb
-from tqdm import tqdm
 import yaml
 
 from chart_groups.models import ChartGroup
@@ -62,6 +61,10 @@ class Command(BaseCommand):
             'mysql_user',
             type=str,
             help="MySQL user to authenticate as")
+        parser.add_argument(
+            '--clear_existing',
+            action='store_true',
+            help="Clear all existing records and players in the Django DB")
 
     def visit_chart_group(self, cg, cg_spec, php_ladder_id, game, ladder_spec):
 
@@ -146,7 +149,10 @@ class Command(BaseCommand):
             -----
             """)
 
-        for php_record in tqdm(php_records):
+        record_lookup = dict()
+        RecordFilterModel = Record.filters.through
+
+        for php_record in php_records:
             # value column is already the same.
             value = php_record['value']
 
@@ -180,38 +186,36 @@ class Command(BaseCommand):
             username = self.fzcphp_user_lookup[php_record['user_id']]
 
             # Create a new player in FZC Django if needed.
-            try:
-                player = Player.objects.get(username=username)
-            except Player.DoesNotExist:
+            if username in self.player_lookup:
+                player_id = self.player_lookup[username]
+            else:
                 player = Player(username=username)
                 player.save()
+                player_id = player.id
+                self.player_lookup[username] = player_id
 
             # See if the record exists.
             # We'll assume that same chart + same player + same time/score
             # means the same record.
-            try:
-                Record.objects.get(chart=chart, player=player, value=value)
-            except Record.DoesNotExist:
-                pass
-            else:
+            record_key = (chart.id, player_id, value)
+            if record_key in record_lookup:
                 # The record exists, so we're done here.
                 continue
 
-            # Create the record.
+            # Prepare the record.
             record = Record(
                 value=value,
                 date_achieved=date_achieved,
                 chart=chart,
-                player=player,
+                player_id=player_id,
             )
-            record.save()
 
-            # Set the record's filters.
+            # Prepare the record's filters.
 
             # Filters specified in YAML.
             ladder_filters = self.fzcphp_ladders_to_filters[
                 php_record['ladder_id']]
-            record_filters = []
+            filter_ids = []
             for filter_group_name, filter_name in ladder_filters.items():
                 if filter_group_name not in chart_type_fg_names:
                     # This filter group does not apply to this chart type.
@@ -220,7 +224,7 @@ class Command(BaseCommand):
                     pass
                 else:
                     filter_id = filter_lookup[filter_group_name][filter_name]
-                    record_filters.append(filter_id)
+                    filter_ids.append(filter_id)
 
             # Machine filter.
             if "Machine" not in chart_type_fg_names:
@@ -233,7 +237,7 @@ class Command(BaseCommand):
                     # We recognize this machine name or know how to fix it.
                     filter_id = \
                         filter_lookup["Machine"][canonical_machine_name]
-                    record_filters.append(filter_id)
+                    filter_ids.append(filter_id)
                 elif php_record['ship'] == '':
                     # No machine specified.
                     pass
@@ -243,15 +247,40 @@ class Command(BaseCommand):
             else:
                 # Machines for games other than GX are straightforward.
                 filter_id = filter_lookup["Machine"][php_record['ship']]
-                record_filters.append(filter_id)
+                filter_ids.append(filter_id)
 
-            record.filters.add(*record_filters)
+            record_lookup[record_key] = dict(
+                record=record, filter_ids=filter_ids)
 
+        self.stdout.write("Bulk-creating records")
+
+        # Create the records.
+        record_list = [
+            entry['record'] for entry in record_lookup.values()]
+        created_record_list = Record.objects.bulk_create(record_list)
+
+        # Create the record-filter associations.
+        filter_ids_list = [
+            entry['filter_ids'] for entry in record_lookup.values()]
+        record_filter_list = []
+        for index, record in enumerate(created_record_list):
+            filter_ids = filter_ids_list[index]
+            record_filters = [
+                RecordFilterModel(record_id=record.id, filter_id=filter_id)
+                for filter_id in filter_ids
+            ]
+            record_filter_list.extend(record_filters)
+        RecordFilterModel.objects.bulk_create(record_filter_list)
+
+        # Print stats.
+
+        game_records = Record.objects.filter(
+            chart__chart_group__game=game)
         self.stdout.write(
             f"""
             Counts:
-            {game.record_set.count()} records
-            {game.record_set.aggregate(Count('filters')).get(
+            {game_records.count()} records
+            {game_records.aggregate(Count('filters')).get(
                 'filters__count')} filter applications to records
             """
         )
@@ -273,6 +302,12 @@ class Command(BaseCommand):
             user=options['mysql_user'], passwd=password,
             db=options['mysql_dbname'], charset='utf8')
         self.mysql_cur = mysql_conn.cursor(MySQLdb.cursors.DictCursor)
+
+        if options['clear_existing']:
+            self.stdout.write("Clearing existing records/players...")
+            Record.objects.all().delete()
+            Player.objects.all().delete()
+            self.stdout.write("Done")
 
         start_time = datetime.datetime.now()
 
@@ -339,10 +374,18 @@ class Command(BaseCommand):
             ],
         }
 
+        existing_players = Player.objects.all()
+        self.player_lookup = {
+            p['username']: p['id']
+            for p in existing_players.values('id', 'username')
+        }
+
         for game_name, php_ladder_ids in all_php_ladder_ids.items():
             self.process_records(game_name, php_ladder_ids)
 
         end_time = datetime.datetime.now()
+
+        # Print stats.
 
         self.stdout.write(
             f"""
