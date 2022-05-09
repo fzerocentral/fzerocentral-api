@@ -4,12 +4,15 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from chart_groups.utils import get_charts_in_hierarchy
-from filters.models import Filter
 from filters.utils import apply_filter_spec, FilterSpec
 from ladders.models import Ladder
 from records.models import Record
 from records.utils import (
-    add_record_displays, make_record_ranking, sort_records_by_value)
+    add_record_filters,
+    add_record_displays,
+    make_record_ranking,
+    sort_records_by_value,
+)
 from .models import Chart
 from .serializers import ChartSerializer
 
@@ -67,14 +70,7 @@ class ChartRanking(APIView):
 
         records = make_record_ranking(records)
 
-        # Add the filters of each record.
-        # These do have to be fetched separately, since values()
-        # doesn't work well with multivalued relations.
-        # https://docs.djangoproject.com/en/dev/ref/models/querysets/#values-list
-        for record in records:
-            record['filters'] = Filter.objects.filter(record=record['id']) \
-                .values('id', 'name', 'filter_group_id')
-
+        add_record_filters(records)
         add_record_displays(records, chart.chart_type.format_spec)
 
         return Response(records)
@@ -168,11 +164,7 @@ class ChartRecordHistory(APIView):
             raise ValueError(
                 f"Unrecognized improvements option: {improvements_option}")
 
-        # Add the filters of each record.
-        for record in records:
-            record['filters'] = Filter.objects.filter(record=record['id']) \
-                .values('id', 'name', 'filter_group_id')
-
+        add_record_filters(records)
         add_record_displays(records, chart.chart_type.format_spec)
 
         return Response(records)

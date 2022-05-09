@@ -1,8 +1,36 @@
+from collections import defaultdict
+
 from django.db.models import QuerySet
 
 from chart_types.utils import apply_format_spec
 from charts.models import Chart
 from core.utils import add_ranks
+from filters.models import Filter
+from .models import Record
+
+
+def add_record_filters(records: list[dict]):
+    """
+    Add the filters of each record.
+    Doing this efficiently is a bit involved, since values()
+    doesn't work well with multivalued relations.
+    https://docs.djangoproject.com/en/dev/ref/models/querysets/#values-list
+    """
+    record_ids = [r['id'] for r in records]
+    RecordFiltersModel = Record.filters.through
+    record_filters = RecordFiltersModel.objects.filter(
+        record__in=record_ids)
+    record_filters_lookup = defaultdict(list)
+    for rf in record_filters:
+        record_filters_lookup[rf.record_id].append(rf.filter_id)
+
+    filters = Filter.objects.filter(record__in=record_ids) \
+        .values('id', 'name', 'filter_group_id')
+    filters_lookup = {f['id']: f for f in filters}
+
+    for record in records:
+        filter_ids = record_filters_lookup[record['id']]
+        record['filters'] = [filters_lookup[f_id] for f_id in filter_ids]
 
 
 def add_record_displays(records: list[dict], format_spec: list[dict]):
