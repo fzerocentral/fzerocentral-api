@@ -1,6 +1,10 @@
 # Include the base.txt requirements.
 -r base.txt
 
+# Print DB query counts in Django's runserver console output.
+# https://github.com/bradmontgomery/django-querycount
+django-querycount
+
 # For fzc_data_import commands.
 mysqlclient
 PyYAML

@@ -15,3 +15,6 @@ ALLOWED_HOSTS = []
 
 # No HTTPS.
 SECURE_PROXY_SSL_HEADER = None
+
+# For django-querycount.
+MIDDLEWARE.append('querycount.middleware.QueryCountMiddleware')
