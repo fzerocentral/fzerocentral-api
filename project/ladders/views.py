@@ -1,3 +1,4 @@
+from __future__ import annotations  # Latest type hint features
 from collections import defaultdict
 from decimal import Decimal
 from operator import itemgetter
