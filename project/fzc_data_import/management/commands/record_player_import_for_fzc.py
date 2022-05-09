@@ -10,7 +10,6 @@ import yaml
 
 from chart_groups.models import ChartGroup
 from charts.models import Chart
-from filter_groups.models import FilterGroup
 from games.models import Game
 from players.models import Player
 from records.models import Record
@@ -27,18 +26,19 @@ class Command(BaseCommand):
     @staticmethod
     def normalize_machine_name(name):
         # Remove spaces and some punctuation.
-        name = re.sub(r'[\s\-/_]+', '', name)
+        name = re.sub(r'[\s\-./_]+', '', name)
         # Uppercase to lowercase.
         return name.lower()
 
-    def get_canonical_machine_name(self, name):
+    def get_canonical_machine_name(
+            self, canonical_lookup, misspell_lookup, name):
         normalized_name = self.normalize_machine_name(name)
 
-        if normalized_name in self.ship_misspellings:
+        if normalized_name in misspell_lookup:
             # Known misspelling in the FZC PHP database.
-            return self.ship_misspellings[normalized_name]
-        elif normalized_name in self.normalized_to_canonical_machines:
-            return self.normalized_to_canonical_machines[normalized_name]
+            return misspell_lookup[normalized_name]
+        elif normalized_name in canonical_lookup:
+            return canonical_lookup[normalized_name]
         else:
             # Unrecognized name
             return None
@@ -111,6 +111,20 @@ class Command(BaseCommand):
         """Process records for a particular game."""
 
         game = Game.objects.get(name=game_name)
+
+        # Make a lookup of known ship misspellings in the FZC PHP database.
+        game_misspell_data = self.misspellings_data[game_name]
+        misspell_lookup = dict()
+        for misspelling, canonical_name in game_misspell_data.items():
+            normalized = self.normalize_machine_name(misspelling)
+            misspell_lookup[normalized] = canonical_name
+
+        # Make a lookup of normalized machine names to canonical machine names.
+        canonical_lookup = dict()
+        machine_fg = game.filtergroup_set.get(name="Machine")
+        for f in machine_fg.filter_set.all():
+            normalized = self.normalize_machine_name(f.name)
+            canonical_lookup[normalized] = f.name
 
         # Make a lookup of filter IDs.
         filter_lookup = dict()
@@ -230,24 +244,20 @@ class Command(BaseCommand):
             if "Machine" not in chart_type_fg_names:
                 # No machine selection for this chart type.
                 pass
-            elif game_name == "F-Zero GX":
+            else:
                 canonical_machine_name = self.get_canonical_machine_name(
-                    php_record['ship'])
+                    canonical_lookup, misspell_lookup, php_record['ship'])
                 if canonical_machine_name:
                     # We recognize this machine name or know how to fix it.
                     filter_id = \
                         filter_lookup["Machine"][canonical_machine_name]
                     filter_ids.append(filter_id)
-                elif php_record['ship'] == '':
+                elif php_record['ship'].strip() == '':
                     # No machine specified.
                     pass
                 else:
                     # Don't know how to fix this machine name.
                     unrecognized_ships.add(php_record['ship'])
-            else:
-                # Machines for games other than GX are straightforward.
-                filter_id = filter_lookup["Machine"][php_record['ship']]
-                filter_ids.append(filter_id)
 
             record_lookup[record_key] = dict(
                 record=record, filter_ids=filter_ids)
@@ -336,23 +346,11 @@ class Command(BaseCommand):
             filter_dict = ladder_spec.get('filters', dict())
             self.fzcphp_ladders_to_filters[php_ladder_id] = filter_dict
 
-        # Make a lookup of known GX ship misspellings in the FZC PHP database.
+        # Load known ship misspellings.
         with open(
                 'fzc_data_import/data/ship_misspellings.yaml',
                 'r', encoding='utf-8') as yaml_file:
-            misspellings_data = yaml.full_load(yaml_file)
-
-        self.ship_misspellings = dict()
-        for misspelling, canonical_name in misspellings_data.items():
-            self.ship_misspellings[
-                self.normalize_machine_name(misspelling)] = canonical_name
-
-        # Make a lookup of normalized machine names to canonical machine names.
-        self.normalized_to_canonical_machines = dict()
-        for filter_group in FilterGroup.objects.filter(name="Machine"):
-            for f in filter_group.filter_set.all():
-                normalized = self.normalize_machine_name(f.name)
-                self.normalized_to_canonical_machines[normalized] = f.name
+            self.misspellings_data = yaml.full_load(yaml_file)
 
         # Make a lookup of user id on FZC PHP -> username.
         self.mysql_cur.execute("SELECT user_id, username FROM phpbb_users;")
@@ -366,6 +364,7 @@ class Command(BaseCommand):
         # For example, if a time is found in both max speed and open ladders
         # for GX, we want to make sure we add it with max speed filters.
         all_php_ladder_ids = {
+            "F-Zero: Maximum Velocity": [3],
             "F-Zero GX": [
                 # F-Zero GX story: max speed, snaking
                 11, 12,

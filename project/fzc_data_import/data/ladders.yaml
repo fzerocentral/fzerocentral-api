@@ -1,3 +1,12 @@
+"F-Zero: Maximum Velocity":
+
+  - name: Open
+    kind: MAIN
+    chart_group: Cups and Championship
+    chart_tags:
+      Course time: 1.0
+      Lap time: 1.0
+
 F-Zero GX:
 
   - name: Open
@@ -5,7 +14,7 @@ F-Zero GX:
     chart_group: Cups
     chart_tags:
       Course time: 1.0
-      Best lap: 1.0
+      Lap time: 1.0
 
   - name: Max speed
     kind: MAIN
@@ -21,7 +30,7 @@ F-Zero GX:
         name: Not used
     chart_tags:
       Course time: 1.0
-      Best lap: 1.0
+      Lap time: 1.0
 
   - name: Snaking
     kind: MAIN
@@ -37,7 +46,7 @@ F-Zero GX:
         name: Not used
     chart_tags:
       Course time: 1.0
-      Best lap: 1.0
+      Lap time: 1.0
 
   - name: Story Max Speed
     kind: MAIN

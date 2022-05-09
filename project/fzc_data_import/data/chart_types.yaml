@@ -1,3 +1,29 @@
+"F-Zero: Maximum Velocity":
+
+  - name: Course time
+    format_spec:
+      - multiplier: 60
+        suffix: "'"
+      - multiplier: 100
+        suffix: '"'
+        digits: 2
+      - digits: 2
+    order_ascending: True
+    filter_groups:
+      - Machine
+
+  - name: Lap time
+    format_spec:
+      - multiplier: 60
+        suffix: "'"
+      - multiplier: 100
+        suffix: '"'
+        digits: 2
+      - digits: 2
+    order_ascending: True
+    filter_groups:
+      - Machine
+
 F-Zero GX:
 
   - name: Course time
@@ -17,7 +43,7 @@ F-Zero GX:
       - Max speed snaking
       - HSSA
 
-  - name: Best lap
+  - name: Lap time
     format_spec:
       - multiplier: 60
         suffix: "'"
@@ -34,7 +60,7 @@ F-Zero GX:
       - Max speed snaking
       - HSSA
 
-  - name: Top speed
+  - name: Speed
     format_spec:
       - suffix: " km/h"
     order_ascending: False

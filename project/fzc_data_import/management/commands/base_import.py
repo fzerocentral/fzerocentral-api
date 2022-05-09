@@ -12,8 +12,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        gx = Game(name="F-Zero GX")
-        gx.save()
+        Game(name="F-Zero: Maximum Velocity").save()
+        Game(name="F-Zero GX").save()
 
         # Load base filter group and filter data
         with open('fzc_data_import/data/base_filters.yaml', 'r') as yaml_file:

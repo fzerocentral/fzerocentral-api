@@ -5,45 +5,80 @@
 # for example, 2-4 means cup 2, course 4.
 
 # Open
+- ladder_id: 3
+  game_name: "F-Zero: Maximum Velocity"
+  charts:
+    Cups and Championship:
+      Pawn Cup:
+        "Bianca City - Stretch": 1-1
+        "Stark Farm - First": 1-2
+        "Empyrean Colony - Dash": 1-3
+        "Stark Farm - Second": 1-4
+        "Cloud Carpet - Long Jump": 1-5
+      Knight Cup:
+        "Tenth Zone East - Snake": 2-1
+        "Beacon Port - Crossroad": 2-2
+        "Synobazz - Explosive": 2-3
+        "Ancient Mesa - Split": 2-4
+        "Stark Farm - Third": 2-5
+      Bishop Cup:
+        "Bianca City - Tightrope": 3-1
+        "Ancient Mesa - Skating": 3-2
+        "Crater Land - Skid Zone": 3-3
+        "Cloud Carpet - Icarus": 3-4
+        "Bianca City - Ultimate": 3-5
+      Queen Cup:
+        "Crater Land - Loop": 4-1
+        "Tenth Zone East - Plummet": 4-2
+        "Empyrean Colony - Twist": 4-3
+        "Fire Field - Land Mine": 4-4
+        "Fire Field - Warrior": 4-5
+      Championship:
+        "Synobazz - Championship": 5-1
+  record_types:
+    C: Course time
+    L: Lap time
+
+# Open
 - ladder_id: 4
   game_name: F-Zero GX
   charts:
     Cups:
       Ruby Cup:
-        "Mute City: Twist Road": 1-1
-        "Casino Palace: Split Oval": 1-2
-        "Sand Ocean: Surface Slide": 1-3
-        "Lightning: Loop Cross": 1-4
-        "Aeropolis: Multiplex": 1-5
+        "Mute City - Twist Road": 1-1
+        "Casino Palace - Split Oval": 1-2
+        "Sand Ocean - Surface Slide": 1-3
+        "Lightning - Loop Cross": 1-4
+        "Aeropolis - Multiplex": 1-5
       Sapphire Cup:
-        "Big Blue: Drift Highway": 2-1
-        "Port Town: Aero Dive": 2-2
-        "Green Plant: Mobius Ring": 2-3
-        "Port Town: Long Pipe": 2-4
-        "Mute City: Serial Gaps": 2-5
+        "Big Blue - Drift Highway": 2-1
+        "Port Town - Aero Dive": 2-2
+        "Green Plant - Mobius Ring": 2-3
+        "Port Town - Long Pipe": 2-4
+        "Mute City - Serial Gaps": 2-5
       Emerald Cup:
-        "Fire Field: Cylinder Knot": 3-1
-        "Green Plant: Intersection": 3-2
-        "Casino Palace: Double Branches": 3-3
-        "Lightning: Half Pipe": 3-4
-        "Big Blue: Ordeal": 3-5
+        "Fire Field - Cylinder Knot": 3-1
+        "Green Plant - Intersection": 3-2
+        "Casino Palace - Double Branches": 3-3
+        "Lightning - Half Pipe": 3-4
+        "Big Blue - Ordeal": 3-5
       Diamond Cup:
-        "Cosmo Terminal: Trident": 4-1
-        "Sand Ocean: Lateral Shift": 4-2
-        "Fire Field: Undulation": 4-3
-        "Aeropolis: Dragon Slope": 4-4
-        "Phantom Road: Slim-Line Slits": 4-5
+        "Cosmo Terminal - Trident": 4-1
+        "Sand Ocean - Lateral Shift": 4-2
+        "Fire Field - Undulation": 4-3
+        "Aeropolis - Dragon Slope": 4-4
+        "Phantom Road - Slim-Line Slits": 4-5
       AX Cup:
-        "Aeropolis: Screw Drive": 5-1
-        "Outer Space: Meteor Stream": 5-2
-        "Port Town: Cylinder Wave": 5-3
-        "Lightning: Thunder Road": 5-4
-        "Green Plant: Spiral": 5-5
-        "Mute City: Sonic Oval": 5-6
+        "Aeropolis - Screw Drive": 5-1
+        "Outer Space - Meteor Stream": 5-2
+        "Port Town - Cylinder Wave": 5-3
+        "Lightning - Thunder Road": 5-4
+        "Green Plant - Spiral": 5-5
+        "Mute City - Sonic Oval": 5-6
   record_types:
     C: Course time
-    L: Best lap
-    S: Top speed
+    L: Lap time
+    S: Speed
 
 # Max speed
 - ladder_id: 5
@@ -51,40 +86,40 @@
   charts:
     Cups:
       Ruby Cup:
-        "Mute City: Twist Road": 1-1
-        "Casino Palace: Split Oval": 1-2
-        "Sand Ocean: Surface Slide": 1-3
-        "Lightning: Loop Cross": 1-4
-        "Aeropolis: Multiplex": 1-5
+        "Mute City - Twist Road": 1-1
+        "Casino Palace - Split Oval": 1-2
+        "Sand Ocean - Surface Slide": 1-3
+        "Lightning - Loop Cross": 1-4
+        "Aeropolis - Multiplex": 1-5
       Sapphire Cup:
-        "Big Blue: Drift Highway": 2-1
-        "Port Town: Aero Dive": 2-2
-        "Green Plant: Mobius Ring": 2-3
-        "Port Town: Long Pipe": 2-4
-        "Mute City: Serial Gaps": 2-5
+        "Big Blue - Drift Highway": 2-1
+        "Port Town - Aero Dive": 2-2
+        "Green Plant - Mobius Ring": 2-3
+        "Port Town - Long Pipe": 2-4
+        "Mute City - Serial Gaps": 2-5
       Emerald Cup:
-        "Fire Field: Cylinder Knot": 3-1
-        "Green Plant: Intersection": 3-2
-        "Casino Palace: Double Branches": 3-3
-        "Lightning: Half Pipe": 3-4
-        "Big Blue: Ordeal": 3-5
+        "Fire Field - Cylinder Knot": 3-1
+        "Green Plant - Intersection": 3-2
+        "Casino Palace - Double Branches": 3-3
+        "Lightning - Half Pipe": 3-4
+        "Big Blue - Ordeal": 3-5
       Diamond Cup:
-        "Cosmo Terminal: Trident": 4-1
-        "Sand Ocean: Lateral Shift": 4-2
-        "Fire Field: Undulation": 4-3
-        "Aeropolis: Dragon Slope": 4-4
-        "Phantom Road: Slim-Line Slits": 4-5
+        "Cosmo Terminal - Trident": 4-1
+        "Sand Ocean - Lateral Shift": 4-2
+        "Fire Field - Undulation": 4-3
+        "Aeropolis - Dragon Slope": 4-4
+        "Phantom Road - Slim-Line Slits": 4-5
       AX Cup:
-        "Aeropolis: Screw Drive": 5-1
-        "Outer Space: Meteor Stream": 5-2
-        "Port Town: Cylinder Wave": 5-3
-        "Lightning: Thunder Road": 5-4
-        "Green Plant: Spiral": 5-5
-        "Mute City: Sonic Oval": 5-6
+        "Aeropolis - Screw Drive": 5-1
+        "Outer Space - Meteor Stream": 5-2
+        "Port Town - Cylinder Wave": 5-3
+        "Lightning - Thunder Road": 5-4
+        "Green Plant - Spiral": 5-5
+        "Mute City - Sonic Oval": 5-6
   record_types:
     C: Course time
-    L: Best lap
-    S: Top speed
+    L: Lap time
+    S: Speed
   filters:
     Setting: 100%
     Checkpoint skips: Not used
@@ -98,40 +133,40 @@
   charts:
     Cups:
       Ruby Cup:
-        "Mute City: Twist Road": 1-1
-        "Casino Palace: Split Oval": 1-2
-        "Sand Ocean: Surface Slide": 1-3
-        "Lightning: Loop Cross": 1-4
-        "Aeropolis: Multiplex": 1-5
+        "Mute City - Twist Road": 1-1
+        "Casino Palace - Split Oval": 1-2
+        "Sand Ocean - Surface Slide": 1-3
+        "Lightning - Loop Cross": 1-4
+        "Aeropolis - Multiplex": 1-5
       Sapphire Cup:
-        "Big Blue: Drift Highway": 2-1
-        "Port Town: Aero Dive": 2-2
-        "Green Plant: Mobius Ring": 2-3
-        "Port Town: Long Pipe": 2-4
-        "Mute City: Serial Gaps": 2-5
+        "Big Blue - Drift Highway": 2-1
+        "Port Town - Aero Dive": 2-2
+        "Green Plant - Mobius Ring": 2-3
+        "Port Town - Long Pipe": 2-4
+        "Mute City - Serial Gaps": 2-5
       Emerald Cup:
-        "Fire Field: Cylinder Knot": 3-1
-        "Green Plant: Intersection": 3-2
-        "Casino Palace: Double Branches": 3-3
-        "Lightning: Half Pipe": 3-4
-        "Big Blue: Ordeal": 3-5
+        "Fire Field - Cylinder Knot": 3-1
+        "Green Plant - Intersection": 3-2
+        "Casino Palace - Double Branches": 3-3
+        "Lightning - Half Pipe": 3-4
+        "Big Blue - Ordeal": 3-5
       Diamond Cup:
-        "Cosmo Terminal: Trident": 4-1
-        "Sand Ocean: Lateral Shift": 4-2
-        "Fire Field: Undulation": 4-3
-        "Aeropolis: Dragon Slope": 4-4
-        "Phantom Road: Slim-Line Slits": 4-5
+        "Cosmo Terminal - Trident": 4-1
+        "Sand Ocean - Lateral Shift": 4-2
+        "Fire Field - Undulation": 4-3
+        "Aeropolis - Dragon Slope": 4-4
+        "Phantom Road - Slim-Line Slits": 4-5
       AX Cup:
-        "Aeropolis: Screw Drive": 5-1
-        "Outer Space: Meteor Stream": 5-2
-        "Port Town: Cylinder Wave": 5-3
-        "Lightning: Thunder Road": 5-4
-        "Green Plant: Spiral": 5-5
-        "Mute City: Sonic Oval": 5-6
+        "Aeropolis - Screw Drive": 5-1
+        "Outer Space - Meteor Stream": 5-2
+        "Port Town - Cylinder Wave": 5-3
+        "Lightning - Thunder Road": 5-4
+        "Green Plant - Spiral": 5-5
+        "Mute City - Sonic Oval": 5-6
   record_types:
     C: Course time
-    L: Best lap
-    S: Top speed
+    L: Lap time
+    S: Speed
   filters:
     Setting: 0%
     Checkpoint skips: Not used

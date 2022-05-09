@@ -1,14 +1,23 @@
+"F-Zero: Maximum Velocity":
+
+  - name: Course time
+    total_name: Course total
+    primary_chart_type: Course time
+  - name: Lap time
+    total_name: Lap total
+    primary_chart_type: Lap time
+
 F-Zero GX:
 
   - name: Course time
     total_name: Course total
     primary_chart_type: Course time
-  - name: Best lap
+  - name: Lap time
     total_name: Lap total
-    primary_chart_type: Best lap
-  - name: Top speed
+    primary_chart_type: Lap time
+  - name: Speed
     total_name: Speed total
-    primary_chart_type: Top speed
+    primary_chart_type: Speed
 
   - name: All (Story)
     total_name: Total time

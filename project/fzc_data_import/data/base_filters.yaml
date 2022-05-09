@@ -1,14 +1,32 @@
+"F-Zero: Maximum Velocity":
+
+  - name: Machine
+    show_by_default: True
+    description: "Machine/vehicle used."
+    kind: SELECT
+    filters:
+      - Hot Violet
+      - Fire Ball
+      - J.B. Crystal
+      - Wind Walker
+      - Sly Joker
+      - The Stingray
+      - Silver Thunder
+      - Falcon Mk-II
+      - Fighting Comet
+      - Jet Vermilion
+
 F-Zero GX:
 
   - name: Machine
     show_by_default: True
-    description: "Racing machine used for the run."
+    description: "Machine/vehicle used."
     kind: SELECT
     filters: []    # Machine filters are covered in a separate file
 
   - name: Setting
     show_by_default: True
-    description: "Acceleration/max speed setting used for the run. 0% all the way at the left, 100% all the way at the right."
+    description: "Acceleration/max speed setting used. 0% all the way at the left, 100% all the way at the right."
     kind: NUMERIC
     filters:
       - [0%, 0]
