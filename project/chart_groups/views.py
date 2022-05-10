@@ -2,6 +2,7 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from core.utils import filter_queryset_by_param
 from .models import ChartGroup
 from .serializers import ChartGroupSerializer
 
@@ -12,9 +13,10 @@ class ChartGroupIndex(ListAPIView):
     def get_queryset(self):
         queryset = ChartGroup.objects.all().order_by('id')
 
-        game_id = self.request.query_params.get('game_id')
-        if game_id is not None:
-            queryset = queryset.filter(game=game_id)
+        queryset = filter_queryset_by_param(
+            self.request, 'game_id', queryset, 'game')
+        queryset = filter_queryset_by_param(
+            self.request, 'game_code', queryset, 'game__short_code')
 
         parent_group_id = self.request.query_params.get('parent_group_id')
         if parent_group_id is not None:

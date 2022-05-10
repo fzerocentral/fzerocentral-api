@@ -3,7 +3,11 @@ from rest_framework.generics import (
 
 from charts.models import Chart
 from core.utils import (
-    delete_ordered_obj_prep, insert_ordered_obj_prep, reorder_obj_prep)
+    delete_ordered_obj_prep,
+    filter_queryset_by_param,
+    insert_ordered_obj_prep,
+    reorder_obj_prep,
+)
 from .models import FilterGroup
 from .serializers import FilterGroupSerializer
 
@@ -16,13 +20,13 @@ class FilterGroupIndex(ListCreateAPIView):
         # default, we order in a way that makes sense there.
         queryset = FilterGroup.objects.all().order_by('order_in_game')
 
-        game_id = self.request.query_params.get('game_id')
-        if game_id is not None:
-            queryset = queryset.filter(game=game_id)
+        queryset = filter_queryset_by_param(
+            self.request, 'game_id', queryset, 'game')
+        queryset = filter_queryset_by_param(
+            self.request, 'game_code', queryset, 'game__short_code')
 
-        chart_type_id = self.request.query_params.get('chart_type_id')
-        if chart_type_id is not None:
-            queryset = queryset.filter(chart_types=chart_type_id)
+        queryset = filter_queryset_by_param(
+            self.request, 'chart_type_id', queryset, 'chart_types')
 
         chart_id = self.request.query_params.get('chart_id')
         if chart_id is not None:

@@ -1,6 +1,7 @@
 from rest_framework.generics import (
     ListCreateAPIView, RetrieveUpdateDestroyAPIView)
 
+from core.utils import filter_queryset_by_param
 from .models import ChartType
 from .serializers import ChartTypeSerializer
 
@@ -11,13 +12,13 @@ class ChartTypeIndex(ListCreateAPIView):
     def get_queryset(self):
         queryset = ChartType.objects.all().order_by('name')
 
-        game_id = self.request.query_params.get('game_id')
-        if game_id is not None:
-            queryset = queryset.filter(game=game_id)
+        queryset = filter_queryset_by_param(
+            self.request, 'game_id', queryset, 'game')
+        queryset = filter_queryset_by_param(
+            self.request, 'game_code', queryset, 'game__short_code')
 
-        filter_group_id = self.request.query_params.get('filter_group_id')
-        if filter_group_id is not None:
-            queryset = queryset.filter(filter_groups=filter_group_id)
+        queryset = filter_queryset_by_param(
+            self.request, 'filter_group_id', queryset, 'filter_groups')
 
         return queryset
 

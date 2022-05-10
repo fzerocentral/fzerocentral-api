@@ -34,6 +34,8 @@ class LadderIndex(ListCreateAPIView):
 
         queryset = filter_queryset_by_param(
             self.request, 'game_id', queryset, 'game')
+        queryset = filter_queryset_by_param(
+            self.request, 'game_code', queryset, 'game__short_code')
 
         queryset = filter_queryset_by_param(
             self.request, 'kind', queryset, 'kind')
