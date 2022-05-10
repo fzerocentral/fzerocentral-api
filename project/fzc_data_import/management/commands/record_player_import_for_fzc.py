@@ -74,32 +74,31 @@ class Command(BaseCommand):
                 cup_id = int(cup_id)
                 course_id = int(course_id)
 
-                if 'record_type' in ladder_spec:
-                    # Only one recognized record type, so the name will be
-                    # a chart name in FZC Django, not a chart group name.
-                    rt_code = ladder_spec['record_type']
-                    chart_name = name
-                    chart = Chart.objects.get(
-                        chart_group=cg, name=chart_name)
-                    key = (
-                        php_ladder_id, cup_id, course_id, rt_code)
-                    self.php_to_django_chart_lookup[key] = chart
-                else:
-                    # Multiple record types.
-                    record_types = ladder_spec['record_types']
-                    cg_name = name
-                    child_cg = ChartGroup.objects.get(
-                        game=game, parent_group=cg, name=cg_name)
-                    for rt_code, rt_name in record_types.items():
-                        chart = child_cg.charts.get(name=rt_name)
-                        key = (
-                            php_ladder_id, cup_id, course_id, rt_code)
-                        self.php_to_django_chart_lookup[key] = chart
+                for rt in ladder_spec['record_types']:
+                    key = (php_ladder_id, cup_id, course_id, rt['old'])
 
-                if 'ignored_record_types' in ladder_spec:
-                    for rt_code in ladder_spec['ignored_record_types']:
-                        key = (php_ladder_id, cup_id, course_id, rt_code)
-                        self.php_ignored_charts.add(key)
+                    if rt['new'] is None:
+                        # Ignore this record type.
+                        chart = None
+                    elif rt['new'] is True:
+                        # Only one recognized record type, so the name will be
+                        # a chart name in FZC Django, not a chart group name.
+                        chart_name = name
+                        chart = Chart.objects.get(
+                            chart_group=cg, name=chart_name)
+                    else:
+                        # Multiple record types to import, so the name will be
+                        # a chart group name, and the record type will specify
+                        # the chart name.
+                        cg_name = name
+                        child_cg = ChartGroup.objects.get(
+                            game=game, parent_group=cg, name=cg_name)
+                        chart = child_cg.charts.get(name=rt['new'])
+
+                    lookup_result = dict(chart=chart)
+                    if 'value_divisor' in rt:
+                        lookup_result['value_divisor'] = rt['value_divisor']
+                    self.php_to_django_chart_lookup[key] = lookup_result
             else:
                 cg_name = name
                 child_cg = ChartGroup.objects.get(
@@ -167,9 +166,6 @@ class Command(BaseCommand):
         RecordFilterModel = Record.filters.through
 
         for php_record in php_records:
-            # value column is already the same.
-            value = php_record['value']
-
             # last_change is the only date field on FZC PHP records, so we use
             # that, even if it's not the same as achievement date.
             # TODO: Double check if this timezone is correct for FZC's
@@ -183,10 +179,17 @@ class Command(BaseCommand):
                 php_record['cup_id'],
                 php_record['course_id'],
                 php_record['record_type'])
-            if lookup_key in self.php_ignored_charts:
+            chart_lookup_entry = self.php_to_django_chart_lookup[lookup_key]
+            chart = chart_lookup_entry['chart']
+            if chart is None:
                 continue
-            chart = self.php_to_django_chart_lookup[lookup_key]
             chart_type_fg_names = ctfg_lookup[chart.chart_type_id]
+
+            # value might need a divisor. For example, to convert milliseconds
+            # to centiseconds.
+            value = php_record['value']
+            if 'value_divisor' in chart_lookup_entry:
+                value /= chart_lookup_entry['value_divisor']
 
             # Users/Players.
 
@@ -326,7 +329,6 @@ class Command(BaseCommand):
         # Also a lookup of FZC PHP ladder -> filters.
 
         self.php_to_django_chart_lookup = dict()
-        self.php_ignored_charts = set()
         self.fzcphp_ladders_to_filters = dict()
 
         with open(

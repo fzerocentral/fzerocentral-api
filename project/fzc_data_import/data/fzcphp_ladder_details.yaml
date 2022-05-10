@@ -3,6 +3,10 @@
 # `charts` entries are structured based on the FZC Django chart structure.
 # The innermost `charts` elements indicate the FZC PHP cup ids and course ids;
 # for example, 2-4 means cup 2, course 4.
+#
+# FZC PHP saves times in milliseconds, even for games with centiseconds. So
+# the value needs to be divided by 10 to get centiseconds. That's what the
+# `value_divisor` is for in `record_types`.
 
 # Open
 - ladder_id: 3
@@ -36,8 +40,12 @@
       Championship:
         "Synobazz - Championship": 5-1
   record_types:
-    C: Course time
-    L: Lap time
+    - old: C
+      new: Course time
+      value_divisor: 10
+    - old: L
+      new: Lap time
+      value_divisor: 10
 
 # Open
 - ladder_id: 4
@@ -76,9 +84,12 @@
         "Green Plant - Spiral": 5-5
         "Mute City - Sonic Oval": 5-6
   record_types:
-    C: Course time
-    L: Lap time
-    S: Speed
+    - old: C
+      new: Course time
+    - old: L
+      new: Lap time
+    - old: S
+      new: Speed
 
 # Max speed
 - ladder_id: 5
@@ -117,9 +128,12 @@
         "Green Plant - Spiral": 5-5
         "Mute City - Sonic Oval": 5-6
   record_types:
-    C: Course time
-    L: Lap time
-    S: Speed
+    - old: C
+      new: Course time
+    - old: L
+      new: Lap time
+    - old: S
+      new: Speed
   filters:
     Setting: 100%
     Checkpoint skips: Not used
@@ -164,9 +178,12 @@
         "Green Plant - Spiral": 5-5
         "Mute City - Sonic Oval": 5-6
   record_types:
-    C: Course time
-    L: Lap time
-    S: Speed
+    - old: C
+      new: Course time
+    - old: L
+      new: Lap time
+    - old: S
+      new: Speed
   filters:
     Setting: 0%
     Checkpoint skips: Not used
@@ -215,11 +232,16 @@
         Normal: 1-9
         Hard: 2-9
         Very Hard: 3-9
-  # Only take records with record type C (course).
-  record_type: C
-  # Story ladders used to have lap times, so those have still been in the FZC
-  # PHP database, but haven't been usable/visible since maybe 2010.
-  ignored_record_types: [L]
+  # Only take records with record type C (course). true means assign the record
+  # to the only applicable chart.
+  # Story ladders used to have lap times (L), so those have still been in the FZC
+  # PHP database, but haven't been usable/visible since maybe 2010. So we won't
+  # import those.
+  record_types:
+    - old: C
+      new: true
+    - old: L
+      new:
   filters:
     Setting: 100%
     HSSA: Not used
@@ -265,8 +287,11 @@
         Normal: 1-9
         Hard: 2-9
         Very Hard: 3-9
-  record_type: C
-  ignored_record_types: [L]
+  record_types:
+    - old: C
+      new: true
+    - old: L
+      new:
   filters:
     Setting: 0%
     HSSA: Not used

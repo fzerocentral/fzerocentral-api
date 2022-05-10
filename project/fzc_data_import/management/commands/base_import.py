@@ -60,7 +60,7 @@ class Command(BaseCommand):
 
             for ct_data in game_cts_data:
                 filter_groups = FilterGroup.objects.filter(
-                    name__in=ct_data['filter_groups'])
+                    game=game, name__in=ct_data['filter_groups'])
                 ct = ChartType(
                     game=game,
                     name=ct_data['name'],
