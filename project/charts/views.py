@@ -28,15 +28,13 @@ class ChartIndex(ListAPIView):
             queryset = queryset.filter(
                 chart_group=chart_group_id).order_by('order_in_group')
 
-        # May or may not stay a queryset from here on out.
-        charts = queryset
-
         ladder_id = self.request.query_params.get('ladder_id')
         if ladder_id is not None:
             ladder = Ladder.objects.get(id=ladder_id)
-            charts = get_charts_in_hierarchy(ladder.chart_group)
+            queryset = get_charts_in_hierarchy(ladder.chart_group)
 
-        return charts
+        # If we don't select related objs, the serializer gets O(n) queries.
+        return queryset.select_related('chart_type', 'chart_group')
 
 
 class ChartDetail(RetrieveAPIView):
