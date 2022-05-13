@@ -26,7 +26,9 @@ class ChartGroupIndex(ListAPIView):
                 queryset = queryset.filter(parent_group=parent_group_id)
             queryset = queryset.order_by('order_in_parent')
 
-        return queryset
+        return queryset \
+            .select_related('game', 'parent_group') \
+            .prefetch_related('charts')
 
 
 class ChartGroupDetail(RetrieveAPIView):

@@ -13,4 +13,7 @@ class ChartSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Chart
-        exclude = ['date_created', 'date_modified']
+        fields = [
+            'name', 'chart_group', 'order_in_group', 'chart_type',
+            'chart_tags',
+        ]

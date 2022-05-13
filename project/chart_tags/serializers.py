@@ -6,4 +6,4 @@ from .models import ChartTag
 class ChartTagSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChartTag
-        exclude = ['charts']
+        fields = '__all__'

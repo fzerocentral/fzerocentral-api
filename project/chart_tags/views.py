@@ -13,6 +13,11 @@ class ChartTagIndex(ListAPIView):
         queryset = ChartTag.objects.all().order_by('name')
 
         queryset = filter_queryset_by_param(
+            self.request, 'game_id', queryset, 'game')
+        queryset = filter_queryset_by_param(
+            self.request, 'game_code', queryset, 'game__short_code')
+
+        queryset = filter_queryset_by_param(
             self.request, 'ladder_id',
             queryset, 'laddercharttag__ladder')
 

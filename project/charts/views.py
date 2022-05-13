@@ -2,8 +2,10 @@ from django.db.models import F
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_json_api.pagination import JsonApiPageNumberPagination
 
 from chart_groups.utils import get_charts_in_hierarchy
+from core.utils import filter_queryset_by_param
 from filters.utils import apply_filter_spec, FilterSpec
 from ladders.models import Ladder
 from records.models import Record
@@ -17,11 +19,26 @@ from .models import Chart
 from .serializers import ChartSerializer
 
 
+class ChartPagination(JsonApiPageNumberPagination):
+    max_page_size = 1000
+
+
 class ChartIndex(ListAPIView):
     serializer_class = ChartSerializer
 
+    # TODO: Instead of increasing the max page size, we would ideally keep
+    #  the default max of 100 + code the frontend to automatically grab
+    #  multiple pages' worth of objects when needed.
+    pagination_class = ChartPagination
+
     def get_queryset(self):
         queryset = Chart.objects.all()
+
+        queryset = filter_queryset_by_param(
+            self.request, 'game_id', queryset, 'chart_group__game')
+        queryset = filter_queryset_by_param(
+            self.request, 'game_code',
+            queryset, 'chart_group__game__short_code')
 
         chart_group_id = self.request.query_params.get('chart_group_id')
         if chart_group_id is not None:
@@ -33,8 +50,11 @@ class ChartIndex(ListAPIView):
             ladder = Ladder.objects.get(id=ladder_id)
             queryset = get_charts_in_hierarchy(ladder.chart_group)
 
-        # If we don't select related objs, the serializer gets O(n) queries.
-        return queryset.select_related('chart_type', 'chart_group')
+        # If we don't select/prefetch related objs, the serializer gets
+        # O(n) queries. Prefetch is for m2m.
+        return queryset \
+            .select_related('chart_type', 'chart_group') \
+            .prefetch_related('chart_tags')
 
 
 class ChartDetail(RetrieveAPIView):

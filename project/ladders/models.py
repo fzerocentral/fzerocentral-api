@@ -42,8 +42,10 @@ class Ladder(models.Model):
 
 
 class LadderChartTag(models.Model):
-    ladder = models.ForeignKey(Ladder, on_delete=models.CASCADE)
-    chart_tag = models.ForeignKey(ChartTag, on_delete=models.CASCADE)
+    ladder = models.ForeignKey(
+        Ladder, on_delete=models.CASCADE, related_name='ladder_chart_tags')
+    chart_tag = models.ForeignKey(
+        ChartTag, on_delete=models.CASCADE, related_name='ladder_chart_tags')
 
     # Relative weights of different charts in ladder ranking calculations.
     weight = models.DecimalField(
