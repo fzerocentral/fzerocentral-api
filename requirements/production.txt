@@ -1,2 +1,5 @@
 # Include the base.txt requirements.
 -r base.txt
+
+# For serving the app.
+gunicorn
