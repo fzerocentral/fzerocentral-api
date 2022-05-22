@@ -17,3 +17,25 @@ ALLOWED_HOSTS = [env('SITE_HOST')]
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 WSGI_APPLICATION = 'config.wsgi.application'
+
+
+# https://docs.djangoproject.com/en/dev/topics/logging/
+# https://docs.djangoproject.com/en/dev/ref/logging/
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': env('LOG_PATH'),
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
