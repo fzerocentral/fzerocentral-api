@@ -6,14 +6,15 @@ Data API for the (upcoming) F-Zero Central website. Uses the Django web framewor
 ## Installation for development environments
 
 - `git clone` this repository.
-- Install the latest Python 3.9.x (3.10 is not available on the FZC server yet).
+- Install Python 3.10.x.
 - Install the latest PostgreSQL.
   - Create a user `django`, and create a database `fzerocentral`, which grants full permissions to the user you created. You can also use different names, as long as you specify those names in the `.env` file described later.
   - Other database engines like MariaDB, MySQL, or SQLite may also work, but there are differences to be aware of: https://docs.djangoproject.com/en/dev/ref/databases/ 
+- On Ubuntu, install the following apt packages: `python3.10-dev`, `python3.10-venv`, `build-essential`, `default-libmysqlclient-dev` if using MariaDB/MySQL
 - Set up a virtual environment and install Python packages there:
-  - Create a virtual environment at the directory of your choice (can be outside of the repository): `python -m venv <path/to/environment>`
-    - If your system has multiple Python installations, be sure to use the `python` executable from the correct installation.
+  - Create a virtual environment at the directory of your choice (can be outside of the repository): `python3.10 -m venv <path/to/environment>`
   - Activate your environment: `source <path/to/environment>/bin/activate` on Linux, `<path/to/environment>/Scripts/activate` on Windows.
+  - If on Linux, run `pip install wheel`
   - Run `pip install -r requirements/development.txt` to install packages to your environment. Ensure that there are no installation errors.
 - Create an `.env` file at the root of this repository. Specify configuration variable values in this file, using the `.env.dist` file as a template.
 - Set an environment variable to specify you're using the 'development' settings module. `export DJANGO_SETTINGS_MODULE=config.settings.development` on Linux, `set DJANGO_SETTINGS_MODULE=config.settings.development` on Windows.
