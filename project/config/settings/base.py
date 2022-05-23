@@ -67,7 +67,7 @@ ROOT_URLCONF = 'config.urls'
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
     'default': {
-        'ENGINE': env('DATABASE_ENGINE', default='django.db.backends.postgresql'),
+        'ENGINE': 'django.db.backends.postgresql',
         # If True, wraps each request (view function) in a transaction by
         # default. Individual view functions can override this behavior with
         # the non_atomic_requests decorator.
@@ -77,6 +77,8 @@ DATABASES = {
         'USER': env('DATABASE_USER', default='django'),
         'PASSWORD': env('DATABASE_PASSWORD'),
         # Set to empty string for localhost.
+        # Linux may want to set 'localhost' explicitly though:
+        # https://stackoverflow.com/questions/8167602/django-connection-to-postgresql-peer-authentication-failed
         'HOST': env('DATABASE_HOST', default=''),
         # Set to empty string for default.
         'PORT': env('DATABASE_PORT', default=''),
