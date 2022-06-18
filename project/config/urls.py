@@ -19,6 +19,10 @@ urlpatterns = [
          include('filter_groups.urls', namespace='filter_groups')),
     path('games/', include('games.urls', namespace='games')),
     path('ladders/', include('ladders.urls', namespace='ladders')),
+    path('old_forum_categories/', include('forum_old.categories.urls')),
+    path('old_forum_forums/', include('forum_old.forums.urls')),
+    path('old_forum_posts/', include('forum_old.posts.urls')),
+    path('old_forum_topics/', include('forum_old.topics.urls')),
     path('players/', include('players.urls', namespace='players')),
     path('records/', include('records.urls', namespace='records')),
 ]
