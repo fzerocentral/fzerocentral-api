@@ -13,4 +13,8 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = '__all__'
+        fields = [
+            'subject', 'time', 'username', 'topic', 'poster',
+            # text instead of raw_text
+            'text',
+        ]

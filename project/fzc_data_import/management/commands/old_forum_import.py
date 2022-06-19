@@ -167,7 +167,7 @@ class Command(BaseCommand):
                     d['post_time'], tz=datetime.timezone.utc),
                 username=d['post_username'],
                 subject=d['post_subject'],
-                text=d['post_text'],
+                raw_text=d['post_text'],
             ))
         Post.objects.bulk_create(posts)
 
