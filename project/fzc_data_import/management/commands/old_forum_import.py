@@ -9,6 +9,7 @@ from forum_old.forums.models import Forum
 from forum_old.posts.models import Post
 from forum_old.topics.models import Topic
 from forum_old.users.models import User
+from ...utils import convert_text
 
 
 class Command(BaseCommand):
@@ -79,7 +80,7 @@ class Command(BaseCommand):
         for d in mysql_cur.fetchall():
             users.append(User(
                 id=d['user_id'],
-                username=d['username'],
+                username=convert_text(d['username']),
             ))
         User.objects.bulk_create(users)
 
@@ -93,7 +94,7 @@ class Command(BaseCommand):
         for d in mysql_cur.fetchall():
             categories.append(Category(
                 id=d['cat_id'],
-                title=d['cat_title'],
+                title=convert_text(d['cat_title']),
                 order=d['cat_order'],
             ))
         Category.objects.bulk_create(categories)
@@ -111,8 +112,8 @@ class Command(BaseCommand):
             forums.append(Forum(
                 id=d['forum_id'],
                 category_id=d['cat_id'],
-                name=d['forum_name'],
-                description=d['forum_desc'],
+                name=convert_text(d['forum_name']),
+                description=convert_text(d['forum_desc']),
                 order=d['forum_order'],
             ))
         Forum.objects.bulk_create(forums)
@@ -133,7 +134,7 @@ class Command(BaseCommand):
             topics.append(Topic(
                 id=d['topic_id'],
                 forum_id=d['forum_id'],
-                title=d['topic_title'],
+                title=convert_text(d['topic_title']),
             ))
         Topic.objects.bulk_create(topics)
 
@@ -165,9 +166,9 @@ class Command(BaseCommand):
                 poster_id=poster_id,
                 time=datetime.datetime.fromtimestamp(
                     d['post_time'], tz=datetime.timezone.utc),
-                username=d['post_username'],
-                subject=d['post_subject'],
-                raw_text=d['post_text'],
+                username=convert_text(d['post_username']),
+                subject=convert_text(d['post_subject']),
+                raw_text=convert_text(d['post_text']),
             ))
         Post.objects.bulk_create(posts)
 
