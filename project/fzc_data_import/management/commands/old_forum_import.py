@@ -121,7 +121,8 @@ class Command(BaseCommand):
         # Get Topics from phpBB and create in Django.
 
         mysql_cur.execute(
-            "SELECT t.topic_id, t.forum_id, t.topic_title"
+            "SELECT t.topic_id, t.forum_id, t.topic_title, t.topic_vote,"
+            " t.is_news, t.topic_status, t.topic_type"
             " FROM phpbb_topics as t"
             " JOIN phpbb_forums as f ON t.forum_id = f.forum_id"
             " WHERE f.auth_view = 0;")
@@ -135,6 +136,10 @@ class Command(BaseCommand):
                 id=d['topic_id'],
                 forum_id=d['forum_id'],
                 title=convert_text(d['topic_title']),
+                has_poll=int(d['topic_vote']) == 1,
+                is_news=int(d['is_news']) == 1,
+                status=d['topic_status'],
+                importance=d['topic_type'],
             ))
         Topic.objects.bulk_create(topics)
 

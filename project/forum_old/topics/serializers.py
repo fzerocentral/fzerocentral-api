@@ -13,4 +13,5 @@ class TopicSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Topic
-        fields = '__all__'
+        fields = [
+            'title', 'has_poll', 'is_news', 'status', 'importance', 'forum']

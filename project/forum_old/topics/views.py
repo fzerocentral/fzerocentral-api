@@ -22,12 +22,22 @@ class TopicIndex(ListAPIView):
         queryset = filter_queryset_by_param(
             self.request, 'forum_id', queryset, 'forum')
 
-        # Order topics by id of latest post.
-        # TODO: Should exclude moved topics, since those don't have posts
-        #  directly under them and end up being listed first.
+        # Hide moved topics by default, because:
+        # - They're only useful to list when they're recent, since whoever's
+        # looking for the topic may not know that it moved.
+        # But this is an old archive, with no recent posts.
+        # - It requires extra logic to sort moved topics properly
+        # with other topics.
+        include_moved = self.request.query_params.get('include_moved', 'no')
+        if include_moved != 'yes':
+            queryset = queryset.exclude(status=Topic.Statuses.MOVED)
+
+        # Order criteria:
+        # 1. announcements first, then sticky, then others
+        # 2. latest post ID
         queryset = queryset \
             .annotate(latest_post=Max('post')) \
-            .order_by('-latest_post')
+            .order_by('-importance', '-latest_post')
         return queryset
 
 
