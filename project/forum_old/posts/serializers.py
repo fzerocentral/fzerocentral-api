@@ -18,3 +18,21 @@ class PostSerializer(serializers.ModelSerializer):
             # text instead of raw_text
             'text',
         ]
+
+
+class PostCompactSerializer(serializers.ModelSerializer):
+    """
+    More compact response, with no post text.
+    """
+
+    # These related fields are available for inclusion with the `include`
+    # query parameter.
+    included_serializers = {
+        'poster': UserSerializer,
+    }
+
+    class Meta:
+        model = Post
+        fields = [
+            'subject', 'time', 'username', 'topic', 'poster',
+        ]

@@ -26,3 +26,11 @@ class Topic(models.Model):
 
     class JSONAPIMeta:
         resource_name = 'old_forum_topics'
+
+    @property
+    def first_post(self):
+        return self.post_set.order_by('time').first()
+
+    @property
+    def last_post(self):
+        return self.post_set.order_by('time').last()
