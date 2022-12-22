@@ -24,5 +24,5 @@ class TopicSerializer(serializers.ModelSerializer):
         model = Topic
         fields = [
             'title', 'has_poll', 'is_news', 'status', 'importance',
-            'forum', 'first_post', 'last_post',
+            'forum', 'first_post', 'last_post', 'post_count',
         ]

@@ -34,3 +34,7 @@ class Topic(models.Model):
     @property
     def last_post(self):
         return self.post_set.order_by('time').last()
+
+    @property
+    def post_count(self):
+        return self.post_set.count()
