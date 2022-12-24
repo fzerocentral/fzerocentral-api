@@ -4,6 +4,7 @@ import yaml
 from chart_groups.models import ChartGroup
 from chart_tags.models import ChartTag
 from filters.models import Filter
+from filters.utils import FilterSpec
 from games.models import Game
 from ladders.models import Ladder, LadderChartTag
 
@@ -44,7 +45,7 @@ class Command(BaseCommand):
                     modifier = ''
                     if 'modifier' in filter_data:
                         modifier = getattr(
-                            Filter.SpecModifiers,
+                            FilterSpec.Modifiers,
                             filter_data['modifier']).value
 
                     filter_spec_parts.append(f'{f.id}{modifier}')

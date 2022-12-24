@@ -9,7 +9,7 @@ from forum_old.forums.models import Forum
 from forum_old.posts.models import Post
 from forum_old.topics.models import Topic
 from forum_old.users.models import User
-from ...utils import convert_text
+from ...utils import convert_media_urls, convert_text
 
 
 class Command(BaseCommand):
@@ -17,7 +17,7 @@ class Command(BaseCommand):
     Import forum data from the old FZC database.
     
     Example usage:
-    python manage.py old_forum_import localhost 3306 fzc_php root
+    python manage.py old_forum_import_fzc localhost 3306 fzc_php root
     """
 
     def add_arguments(self, parser):
@@ -173,7 +173,8 @@ class Command(BaseCommand):
                     d['post_time'], tz=datetime.timezone.utc),
                 username=convert_text(d['post_username']),
                 subject=convert_text(d['post_subject']),
-                raw_text=convert_text(d['post_text']),
+                raw_text=convert_media_urls(
+                    convert_text(d['post_text']), d['post_id']),
             ))
         Post.objects.bulk_create(posts)
 

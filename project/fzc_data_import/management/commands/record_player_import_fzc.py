@@ -20,7 +20,7 @@ class Command(BaseCommand):
     Import records and players from the old FZC database.
     
     Example usage:
-    python manage.py record_player_import_for_fzc localhost 3306 fzc_php root
+    python manage.py record_player_import_fzc localhost 3306 fzc_php root
     """
 
     @staticmethod
