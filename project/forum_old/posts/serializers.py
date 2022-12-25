@@ -14,7 +14,7 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = [
-            'subject', 'time', 'username', 'topic', 'poster',
+            'subject', 'time', 'edit_time', 'username', 'topic', 'poster',
             # text instead of raw_text
             'text',
         ]
@@ -22,7 +22,7 @@ class PostSerializer(serializers.ModelSerializer):
 
 class PostCompactSerializer(serializers.ModelSerializer):
     """
-    More compact response, with no post text.
+    More compact response, most notably omitting post text.
     """
 
     # These related fields are available for inclusion with the `include`

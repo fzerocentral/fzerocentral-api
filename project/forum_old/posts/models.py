@@ -10,6 +10,7 @@ class Post(models.Model):
     subject = models.CharField(max_length=500)
     raw_text = models.CharField(max_length=1000000)
     time = models.DateTimeField()
+    edit_time = models.DateTimeField(null=True)
     # Optional username for guest posts
     username = models.CharField(max_length=30)
 

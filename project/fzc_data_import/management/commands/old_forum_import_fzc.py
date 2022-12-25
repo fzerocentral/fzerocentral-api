@@ -152,7 +152,8 @@ class Command(BaseCommand):
 
         mysql_cur.execute(
             "SELECT p.post_id, p.topic_id, p.poster_id, p.post_time,"
-            " p.post_username, tx.post_subject, tx.post_text"
+            " p.post_edit_time, p.post_username,"
+            " tx.post_subject, tx.post_text"
             " FROM phpbb_posts as p"
             " JOIN phpbb_posts_text as tx ON p.post_id = tx.post_id"
             " JOIN phpbb_topics as t ON p.topic_id = t.topic_id"
@@ -169,20 +170,26 @@ class Command(BaseCommand):
                 continue
             else:
                 poster_id = d['poster_id']
+
+            edit_time = None
+            if d['post_edit_time']:
+                edit_time = datetime.datetime.fromtimestamp(
+                    d['post_edit_time'], tz=datetime.timezone.utc)
+
             posts.append(Post(
                 id=d['post_id'],
                 topic_id=d['topic_id'],
                 poster_id=poster_id,
                 time=datetime.datetime.fromtimestamp(
                     d['post_time'], tz=datetime.timezone.utc),
+                edit_time=edit_time,
                 username=convert_text(d['post_username']),
                 subject=convert_text(d['post_subject']),
                 raw_text=convert_media_urls(
                     convert_text(d['post_text']), d['post_id']),
             ))
-        Post.objects.bulk_create(posts)
 
-        end_time = datetime.datetime.now()
+        Post.objects.bulk_create(posts)
 
         # Get Votes (polls) from phpBB and create in Django.
 
@@ -224,6 +231,8 @@ class Command(BaseCommand):
         PollOption.objects.bulk_create(poll_options)
 
         # Print stats.
+
+        end_time = datetime.datetime.now()
 
         self.stdout.write(
             f"""
