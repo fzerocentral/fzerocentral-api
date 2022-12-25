@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     'filter_groups',
     'forum_old.categories',
     'forum_old.forums',
+    'forum_old.polls',
+    'forum_old.poll_options',
     'forum_old.posts',
     'forum_old.topics',
     'forum_old.users',

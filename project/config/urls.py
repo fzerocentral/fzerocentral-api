@@ -21,6 +21,8 @@ urlpatterns = [
     path('ladders/', include('ladders.urls', namespace='ladders')),
     path('old_forum_categories/', include('forum_old.categories.urls')),
     path('old_forum_forums/', include('forum_old.forums.urls')),
+    path('old_forum_polls/', include('forum_old.polls.urls')),
+    path('old_forum_poll_options/', include('forum_old.poll_options.urls')),
     path('old_forum_posts/', include('forum_old.posts.urls')),
     path('old_forum_topics/', include('forum_old.topics.urls')),
     path('players/', include('players.urls', namespace='players')),

@@ -6,6 +6,8 @@ import MySQLdb
 
 from forum_old.categories.models import Category
 from forum_old.forums.models import Forum
+from forum_old.polls.models import Poll
+from forum_old.poll_options.models import PollOption
 from forum_old.posts.models import Post
 from forum_old.topics.models import Topic
 from forum_old.users.models import User
@@ -56,6 +58,8 @@ class Command(BaseCommand):
 
         if options['clear_existing']:
             self.stdout.write("Clearing existing old-forum data...")
+            PollOption.objects.all().delete()
+            Poll.objects.all().delete()
             Post.objects.all().delete()
             Topic.objects.all().delete()
             Forum.objects.all().delete()
@@ -180,6 +184,45 @@ class Command(BaseCommand):
 
         end_time = datetime.datetime.now()
 
+        # Get Votes (polls) from phpBB and create in Django.
+
+        mysql_cur.execute(
+            "SELECT v.vote_id, v.topic_id, v.vote_text"
+            " FROM phpbb_vote_desc as v"
+            " JOIN phpbb_topics as t ON v.topic_id = t.topic_id"
+            " JOIN phpbb_forums as f ON t.forum_id = f.forum_id"
+            " WHERE f.auth_view = 0;")
+
+        polls = []
+        for d in mysql_cur.fetchall():
+            polls.append(Poll(
+                id=d['vote_id'],
+                topic_id=d['topic_id'],
+                title=convert_text(d['vote_text']),
+            ))
+        Poll.objects.bulk_create(polls)
+
+        # Get Vote Results (poll options) from phpBB and create in Django.
+
+        mysql_cur.execute(
+            "SELECT o.vote_option_id, o.vote_id, o.vote_option_text,"
+            " o.vote_result"
+            " FROM phpbb_vote_results as o"
+            " JOIN phpbb_vote_desc as v ON o.vote_id = v.vote_id"
+            " JOIN phpbb_topics as t ON v.topic_id = t.topic_id"
+            " JOIN phpbb_forums as f ON t.forum_id = f.forum_id"
+            " WHERE f.auth_view = 0;")
+
+        poll_options = []
+        for d in mysql_cur.fetchall():
+            poll_options.append(PollOption(
+                poll_id=d['vote_id'],
+                option_number=d['vote_option_id'],
+                text=convert_text(d['vote_option_text']),
+                vote_count=d['vote_result'],
+            ))
+        PollOption.objects.bulk_create(poll_options)
+
         # Print stats.
 
         self.stdout.write(
@@ -192,6 +235,8 @@ class Command(BaseCommand):
             {Forum.objects.all().count()} forums
             {Topic.objects.all().count()} topics
             {Post.objects.all().count()} posts
+            {Poll.objects.all().count()} polls
+            {PollOption.objects.all().count()} poll options
             Time taken to import: {end_time - start_time}
             """
         )
