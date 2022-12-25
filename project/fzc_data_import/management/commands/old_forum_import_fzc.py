@@ -76,7 +76,8 @@ class Command(BaseCommand):
         # 790 users.
 
         mysql_cur.execute(
-            "SELECT user_id, username FROM phpbb_users"
+            "SELECT user_id, username, user_level, user_posts"
+            " FROM phpbb_users"
             " WHERE exists(SELECT 1 FROM phpbb_posts"
             " WHERE phpbb_posts.poster_id = phpbb_users.user_id);")
 
@@ -85,6 +86,8 @@ class Command(BaseCommand):
             users.append(User(
                 id=d['user_id'],
                 username=convert_text(d['username']),
+                level=d['user_level'],
+                post_count=d['user_posts'],
             ))
         User.objects.bulk_create(users)
 
