@@ -4,7 +4,7 @@ from rest_framework_json_api.relations import ResourceRelatedField
 from ..forums.serializers import ForumSerializer
 from ..polls.serializers import PollSerializer
 from ..posts.models import Post
-from ..posts.serializers import PostCompactSerializer
+from ..posts.serializers_for_topic import PostCompactSerializer
 from .models import Topic
 
 
