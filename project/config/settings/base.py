@@ -162,3 +162,22 @@ JSON_API_FORMAT_FIELD_NAMES = 'dasherize'
 JSON_API_FORMAT_TYPES = 'dasherize'
 # Pluralize the resource 'type' returned in responses.
 JSON_API_PLURALIZE_TYPES = True
+
+# Old FZC MySQL/MariaDB database, only referenced in certain management
+# commands.
+# We currently don't use Django's database functionality for this, because
+# it doesn't seem to have great support for a couple of things we want:
+# 1) specifying the database name on the fly, and
+# 2) schema operations like deleting entire tables (not just emptying them)
+# without having to define migrations.
+# The
+OLD_FZC_DATABASE_NAME = env('OLD_FZC_DATABASE_NAME', default='fzero')
+OLD_FZC_DATABASE_USER = env('OLD_FZC_DATABASE_USER', default='root')
+# Bogus default; there is no reasonable default, but we want a
+# missing value to only cause issues when actually using a command
+# that touches this database.
+OLD_FZC_DATABASE_PASSWORD = env('OLD_FZC_DATABASE_PASSWORD', default='')
+# Set to empty string for localhost.
+OLD_FZC_DATABASE_HOST = env('OLD_FZC_DATABASE_HOST', default='')
+# Set to empty string for default.
+OLD_FZC_DATABASE_PORT = env.int('OLD_FZC_DATABASE_PORT', default='')
