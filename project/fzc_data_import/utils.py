@@ -156,15 +156,10 @@ def convert_text(mfo_text):
 
 
 @contextmanager
-def gzip_readable_stream(filepath):
+def readable_text_stream(filepath):
     if Path(filepath).suffix == '.gz':
         with gzip.open(filepath, 'rt', encoding='utf-8') as stream:
             yield stream
     else:
         with open(filepath, 'rt', encoding='utf-8') as stream:
             yield stream
-
-
-def write_gzip(filepath, content_bytes):
-    with gzip.open(filepath, 'wb') as f:
-        f.write(content_bytes)
